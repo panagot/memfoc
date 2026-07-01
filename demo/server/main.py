@@ -42,6 +42,17 @@ store = FilecoinStore(
     on_event=broadcast,
 )
 
+_init_lock = asyncio.Lock()
+_initialized = False
+
+
+async def ensure_store_ready() -> None:
+    global _initialized
+    async with _init_lock:
+        if not _initialized:
+            await store.setup()
+            _initialized = True
+
 
 class PutMemoryBody(BaseModel):
     namespace: list[str] = Field(..., min_length=1)
@@ -75,6 +86,10 @@ class GrantFullAuditBody(BaseModel):
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    """Eager startup for local uvicorn; Vercel uses lazy init middleware."""
+    if os.environ.get("VERCEL"):
+        yield
+        return
     await store.setup()
     yield
     await store.aclose()
@@ -87,6 +102,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from starlette.middleware.base import BaseHTTPMiddleware
+
+
+class EnsureStoreMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):  # type: ignore[override]
+        if os.environ.get("VERCEL"):
+            await ensure_store_ready()
+        return await call_next(request)
+
+
+app.add_middleware(EnsureStoreMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origin_regex=(
@@ -290,6 +316,8 @@ async def grant_full_audit(body: GrantFullAuditBody) -> dict[str, Any]:
 
 @app.websocket("/ws/events")
 async def ws_events(websocket: WebSocket) -> None:
+    if os.environ.get("VERCEL"):
+        await ensure_store_ready()
     await websocket.accept()
     ws_clients.add(websocket)
     try:

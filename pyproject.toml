@@ -35,7 +35,7 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 
 [tool.vercel]
-entrypoint = "demo.server.main:app"
+entrypoint = "api.index:app"
 
 [tool.vercel.scripts]
 build = "sh scripts/vercel_build.sh"

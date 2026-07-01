@@ -1,8 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "env": {
+    "PYTHONPATH": "."
+  },
   "functions": {
-    "demo/server/main.py": {
-      "maxDuration": 60
+    "api/index.py": {
+      "maxDuration": 60,
+      "includeFiles": "src/**,demo/**"
     }
   }
 }

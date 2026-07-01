@@ -1,5 +1,4 @@
-# Vercel / production demo API (installs memfoc from pyproject.toml)
-.
+# Vercel production dependencies (memfoc loaded via api/index.py sys.path)
 fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 websockets>=14.0
