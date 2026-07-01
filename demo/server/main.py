@@ -12,6 +12,7 @@ from typing import Any
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 from memfoc.store import FilecoinStore
@@ -331,23 +332,38 @@ async def ws_events(websocket: WebSocket) -> None:
 
 PUBLIC_DIR = ROOT / "public"
 
-if os.environ.get("VERCEL"):
-    from fastapi.responses import FileResponse, HTMLResponse
-    from fastapi.staticfiles import StaticFiles
 
-    @app.get("/", include_in_schema=False)
-    async def spa_root() -> FileResponse | HTMLResponse:
-        index = PUBLIC_DIR / "index.html"
-        if index.is_file():
-            return FileResponse(index)
-        return HTMLResponse(
-            "<!doctype html><html><body>"
-            "<h1>MemFOC API is running</h1>"
-            "<p>Dashboard assets missing — check Vercel build logs.</p>"
-            "<p><a href='/docs'>Open API docs</a></p>"
-            "</body></html>",
-            status_code=200,
-        )
+@app.get("/api/_deploy", include_in_schema=False)
+async def deploy_info() -> dict[str, object]:
+    index = PUBLIC_DIR / "index.html"
+    return {
+        "vercel": IS_VERCEL,
+        "public_dir": str(PUBLIC_DIR),
+        "public_exists": PUBLIC_DIR.is_dir(),
+        "index_exists": index.is_file(),
+    }
+
+
+@app.get("/", include_in_schema=False)
+async def spa_root() -> FileResponse | HTMLResponse | RedirectResponse:
+    if not IS_VERCEL:
+        return RedirectResponse(url="/docs")
+    index = PUBLIC_DIR / "index.html"
+    if index.is_file():
+        return FileResponse(index)
+    return HTMLResponse(
+        "<!doctype html><html><body>"
+        "<h1>MemFOC API is running</h1>"
+        "<p>Dashboard assets missing — check Vercel build logs.</p>"
+        "<p><a href='/docs'>Open API docs</a> · "
+        "<a href='/api/_deploy'>Deploy info</a></p>"
+        "</body></html>",
+        status_code=200,
+    )
+
+
+if IS_VERCEL:
+    from fastapi.staticfiles import StaticFiles
 
     assets_dir = PUBLIC_DIR / "assets"
     if assets_dir.is_dir():
