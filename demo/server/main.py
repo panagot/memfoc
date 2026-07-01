@@ -330,7 +330,11 @@ async def ws_events(websocket: WebSocket) -> None:
         ws_clients.discard(websocket)
 
 
-PUBLIC_DIR = ROOT / "public"
+PUBLIC_DIR = (
+    ROOT / "demo" / "server" / "static"
+    if IS_VERCEL
+    else ROOT / "public"
+)
 
 
 @app.get("/api/_deploy", include_in_schema=False)
