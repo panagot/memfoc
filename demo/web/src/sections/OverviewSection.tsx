@@ -3,10 +3,15 @@ import { CheckCircle, Stack } from "@phosphor-icons/react";
 import type { SectionId } from "../data/navigation";
 import {
   BUILDING_NOW,
-  PRODUCT_TAGLINE,
+  HERO_CODE,
+  HERO_HEADLINE,
+  HERO_SUBHEAD,
+  HERO_WHY,
   PROBLEM_POINTS,
+  RECOVERY_INVARIANT,
   VALUE_PROPS,
 } from "../data/docs";
+import { DemoVideoCTA } from "../components/grant/DemoVideoCTA";
 import { HeroIllustration } from "../components/graphics/HeroIllustration";
 import { ArchitectureFlow } from "../components/graphics/ArchitectureFlow";
 import { TrustBadges } from "../components/grant/JudgeTourBanner";
@@ -42,15 +47,26 @@ export function OverviewSection({
             <div className="relative overflow-hidden p-8 md:p-12 lg:p-14">
               <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-mem-gold/10 blur-3xl" />
               <Eyebrow>FIL Builder · LangGraph × Filecoin</Eyebrow>
-              <p className="mt-6 font-display text-2xl font-bold leading-snug text-mem-frost md:text-3xl">
-                PostgresStore semantics.{" "}
-                <span className="text-gradient-gold">Filecoin durability.</span>
+              <h1 className="mt-6 font-display text-2xl font-bold leading-snug text-mem-frost md:text-3xl lg:text-4xl">
+                {HERO_HEADLINE}
+              </h1>
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-mem-muted md:text-lg">
+                {HERO_SUBHEAD}
               </p>
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-mem-muted md:text-lg">
-                {PRODUCT_TAGLINE}
-              </p>
+              <pre className="mt-6 overflow-x-auto rounded-2xl border border-mem-line bg-void-inset p-4 font-mono text-xs leading-relaxed text-mem-mint md:text-sm">
+                {HERO_CODE}
+              </pre>
+              <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-mem-muted">
+                {HERO_WHY.map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <span className="text-mem-mint">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
               <div className="mt-10 flex flex-wrap gap-4">
                 <PrimaryButton onClick={() => onNavigate("demo")}>Start guided demo</PrimaryButton>
+                <DemoVideoCTA />
                 <PrimaryButton variant="ghost" onClick={() => onNavigate("grant")}>
                   View grant roadmap
                 </PrimaryButton>
@@ -91,7 +107,7 @@ export function OverviewSection({
           <StatTile label="Pending upload" value={stats?.pending ?? "—"} />
           <StatTile
             label="Backend"
-            value={stats?.backend?.replace("MockFOC", "Mock ") ?? "—"}
+            value={stats?.backend?.replace("MockFOC", "Prototype ") ?? "—"}
             hint="Synapse on testnet (grant M2)"
           />
         </div>
@@ -156,6 +172,18 @@ export function OverviewSection({
             <ArchitectureFlow />
           </div>
         </Bezel>
+      </section>
+
+      {/* Recovery invariant */}
+      <section>
+        <BezelPanel title="Disaster recovery invariant">
+          <p className="text-sm leading-relaxed text-mem-muted">{RECOVERY_INVARIANT}</p>
+          <div className="mt-4">
+            <PrimaryButton variant="ghost" onClick={() => onNavigate("manifest")}>
+              Try manifest & recovery →
+            </PrimaryButton>
+          </div>
+        </BezelPanel>
       </section>
 
       {/* Building now */}

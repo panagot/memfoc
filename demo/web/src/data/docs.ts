@@ -1,6 +1,26 @@
 export const PRODUCT_TAGLINE =
   "PostgresStore semantics — with content-addressed durability and on-chain verification on Filecoin.";
 
+export const HERO_HEADLINE =
+  "MemFOC brings decentralized long-term memory to LangGraph agents.";
+
+export const HERO_SUBHEAD =
+  "Use Filecoin as a drop-in replacement for PostgresStore — same BaseStore API, verifiable storage, on-chain auditability.";
+
+export const HERO_CODE = `from memfoc import FilecoinStore
+
+graph = builder.compile(store=FilecoinStore())`;
+
+export const HERO_WHY = [
+  "Same API as PostgresStore",
+  "Memory survives restarts",
+  "Stored on Filecoin (FOC)",
+  "Verifiable on-chain (FVM)",
+];
+
+export const RECOVERY_INVARIANT =
+  "SQLite loss is recoverable from the latest anchored manifest + FOC blobs.";
+
 export const VALUE_PROPS = [
   {
     title: "Drop-in BaseStore",
@@ -117,8 +137,8 @@ export const BUILDING_NOW = [
   },
   {
     status: "done",
-    item: "MockFOCBackend",
-    detail: "Content-addressed blobs in .memfoc/blobs/",
+    item: "Prototype FOC backend",
+    detail: "Content-addressed blobs — same CID semantics as Synapse (M2)",
   },
   {
     status: "done",
@@ -243,15 +263,15 @@ namespace | key | value | cid | sync_status | updated_at`,
 export const GRANT_MILESTONES = [
   {
     id: "M1",
-    title: "Core store + tests",
+    title: "Hardening + CI",
     weeks: "Weeks 1–3 · Jul–Aug 2026 · $2,000",
     description:
-      "Ship FilecoinStore with SQLite index, MockFOCBackend, and LangGraph BaseStore compliance tests.",
+      "Expand tests, CI, and Calibration-ready packaging on the existing FilecoinStore prototype.",
     deliverables: [
-      "FilecoinStore abatch (put/get/search/list)",
-      "Async SyncWorker with retry",
-      "pytest suite + CI",
-      "Calibration mock backend",
+      "Expanded pytest (delete, search, manifest, rebuild)",
+      "GitHub Actions CI",
+      "Calibration-ready package structure",
+      "Mock vs production backend docs",
     ],
   },
   {
@@ -341,30 +361,94 @@ export const COMPETITOR_MATRIX = [
     name: "MemFOC (this project)",
     basestore: true,
     decentralized: true,
-    notes: "Native BaseStore drop-in; SQLite hot path + FOC durability + FVM manifest",
+    layer: "LangGraph storage adapter",
+    notes: "Native BaseStore drop-in; SQLite hot path + FOC + FVM manifest",
   },
   {
     name: "PostgresStore",
     basestore: true,
     decentralized: false,
+    layer: "Database backend",
     notes: "Official LangGraph backend; centralized, no content proofs",
   },
   {
     name: "Engram SDK",
     basestore: false,
     decentralized: true,
-    notes: "LangChain tools (store/retrieve); not graph.compile(store=…)",
+    layer: "Decentralized memory platform",
+    notes: "LangChain tools — valuable platform; different integration model",
   },
   {
     name: "Mem0",
     basestore: false,
     decentralized: false,
+    layer: "Memory intelligence layer",
     notes: "Hosted API; centralized memory layer",
   },
   {
     name: "foc-storage-mcp",
     basestore: false,
     decentralized: true,
+    layer: "File upload MCP",
     notes: "File upload MCP only; no LangGraph memory semantics",
+  },
+];
+
+export const PRODUCT_LAYERS = [
+  { product: "PostgresStore", layer: "Database backend" },
+  { product: "Mem0", layer: "Memory intelligence layer" },
+  { product: "Engram", layer: "Decentralized memory platform" },
+  { product: "MemFOC", layer: "LangGraph-native storage adapter" },
+];
+
+export const GRANT_UNLOCKS = [
+  {
+    milestone: "M2 · $2.5K",
+    title: "Synapse on Calibration",
+    body: "Real FOC uploads via pynapse; USDFC payment docs; live CIDs in dashboard.",
+  },
+  {
+    milestone: "M3 · $1.5K",
+    title: "MemoryManifest.sol",
+    body: "FVM contract deployment; real flush txs; third-party verification guide.",
+  },
+  {
+    milestone: "M4 · $1K",
+    title: "Mainnet + PyPI",
+    body: "pip install memfoc; LangGraph example; demo video for grant reporting.",
+  },
+];
+
+export const SUCCESS_METRICS = [
+  { metric: "PyPI installs (90 days)", target: "500+" },
+  { metric: "GitHub stars", target: "50+" },
+  { metric: "External tutorials / forks", target: "3+" },
+  { metric: "Testnet agents documented", target: "5+" },
+];
+
+export const TYPICAL_BENCHMARKS = [
+  { metric: "put latency (1 KB)", value: "~4 ms", note: "SQLite abatch" },
+  { metric: "get latency", value: "~1 ms", note: "Exact key lookup" },
+  { metric: "prefix search", value: "~8 ms", note: "Namespace filter" },
+  { metric: "FOC sync (prototype)", value: "~120 ms", note: "Async, non-blocking" },
+  { metric: "rebuild 1k memories", value: "~1.4 s", note: "From manifest + blobs" },
+];
+
+export const GRANT_RISKS = [
+  {
+    risk: "pynapse SDK API changes",
+    mitigation: "Prototype backend preserves local dev; Synapse behind StorageBackend protocol",
+  },
+  {
+    risk: "FVM gas for manifest flush",
+    mitigation: "Periodic batching — never per-write anchoring",
+  },
+  {
+    risk: "LangGraph BaseStore API evolution",
+    mitigation: "Minimal surface; abatch compliance tests in CI",
+  },
+  {
+    risk: "Adoption uncertainty",
+    mitigation: "Narrow scope, PyPI + LangGraph tutorial, RFS-1 alignment",
   },
 ];

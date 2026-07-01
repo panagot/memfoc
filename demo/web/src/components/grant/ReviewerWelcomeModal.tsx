@@ -8,7 +8,8 @@ const STORAGE_KEY = "memfoc-reviewer-welcome-v1";
 const STEPS: { section: SectionId; label: string; time: string }[] = [
   { section: "overview", label: "Overview", time: "45s" },
   { section: "demo", label: "Guided demo", time: "30s" },
-  { section: "console", label: "Live console", time: "90s" },
+  { section: "console", label: "Live console", time: "60s" },
+  { section: "agent", label: "Agent playground", time: "45s" },
   { section: "grant", label: "Grant roadmap", time: "60s" },
 ];
 
@@ -59,10 +60,11 @@ export function ReviewerWelcomeModal({
                   For FIL Builder reviewers
                 </p>
                 <h2 className="mt-2 font-display text-xl font-bold text-mem-frost">
-                  4-minute evaluation path
+                  ~4-minute evaluation path
                 </h2>
                 <p className="mt-2 text-sm text-mem-muted">
-                  Prototype mode: MockFOCBackend, simulated FVM, ephemeral Vercel storage.
+                  Start here → Guided demo → Agent playground → Grant section. Prototype mode: simulated
+                  FOC/FVM; Vercel data may reset on cold start.
                 </p>
               </div>
               <button

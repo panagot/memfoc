@@ -1,5 +1,10 @@
 import { BezelPanel } from "../ui/Bezel";
-import { GRANT_WHY_FUND, RFS_ALIGNMENT } from "../../data/docs";
+import {
+  GRANT_UNLOCKS,
+  GRANT_WHY_FUND,
+  RFS_ALIGNMENT,
+  SUCCESS_METRICS,
+} from "../../data/docs";
 
 const BUDGET = [
   { label: "M1 Core store", amount: 2000, color: "#E3B341" },
@@ -67,6 +72,40 @@ export function RfsAlignmentCallout() {
               <p className="font-medium text-mem-frost">{item.requirement}</p>
               <p className="mt-0.5 text-xs text-mem-muted">{item.memfoc_answer}</p>
             </div>
+          </li>
+        ))}
+      </ul>
+    </BezelPanel>
+  );
+}
+
+export function GrantUnlocksSection() {
+  return (
+    <BezelPanel title="$7,000 unlocks" subtitle="Grant ROI — production Filecoin integration on proven architecture">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {GRANT_UNLOCKS.map((item) => (
+          <div
+            key={item.title}
+            className="rounded-2xl border border-mem-gold/20 bg-mem-gold/[0.04] p-4"
+          >
+            <p className="font-mono text-xs font-bold text-mem-gold">{item.milestone}</p>
+            <p className="mt-2 font-display text-sm font-semibold text-mem-frost">{item.title}</p>
+            <p className="mt-2 text-xs leading-relaxed text-mem-muted">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </BezelPanel>
+  );
+}
+
+export function SuccessMetricsSection() {
+  return (
+    <BezelPanel title="Success metrics" subtitle="90-day targets after M4 launch">
+      <ul className="space-y-2">
+        {SUCCESS_METRICS.map((m) => (
+          <li key={m.metric} className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+            <span className="text-mem-muted">{m.metric}</span>
+            <span className="font-mono font-semibold text-mem-gold">{m.target}</span>
           </li>
         ))}
       </ul>

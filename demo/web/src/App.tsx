@@ -7,6 +7,7 @@ import { LogoMark } from "./components/brand/LogoMark";
 import { AssistantChat, AssistantFab } from "./components/chat/AssistantChat";
 import { GrantOptimizer, GrantOptimizerFab } from "./components/chat/GrantOptimizer";
 import { JudgeTourBanner, GrantPitchStrip } from "./components/grant/JudgeTourBanner";
+import { PrototypeBanner } from "./components/grant/PrototypeBanner";
 import { useGrantPolish } from "./hooks/GrantPolishContext";
 import { getSection } from "./data/navigation";
 import type { SectionId } from "./data/navigation";
@@ -201,6 +202,7 @@ export default function App() {
 
         <main className="flex-1 overflow-y-auto">
           <div id="main-content" className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-12">
+            <PrototypeBanner />
             <JudgeTourBanner onNavigate={navigate} />
             {(judgeMode || section === "overview") && <GrantPitchStrip />}
 
@@ -232,10 +234,47 @@ export default function App() {
           </div>
         </main>
 
-        <footer className="border-t border-mem-line px-4 py-5 text-center md:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-mem-muted">
-            <LogoMark size={16} />
-            <span>MemFOC · LangGraph BaseStore on Filecoin · FIL Builder Next Step</span>
+        <footer className="border-t border-mem-line px-4 py-5 md:px-8">
+          <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center">
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-mem-muted">
+              <LogoMark size={16} />
+              <span>MemFOC · LangGraph BaseStore on Filecoin · FIL Builder Next Step</span>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 text-xs">
+              <a
+                href="https://github.com/panagot/memfoc"
+                target="_blank"
+                rel="noreferrer"
+                className="text-mem-muted hover:text-mem-gold"
+              >
+                GitHub ↗
+              </a>
+              <a
+                href="https://memfoc-one.vercel.app/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-mem-muted hover:text-mem-gold"
+              >
+                Live demo ↗
+              </a>
+              <a
+                href="https://github.com/panagot/memfoc/blob/main/docs/GRANT.md"
+                target="_blank"
+                rel="noreferrer"
+                className="text-mem-muted hover:text-mem-gold"
+              >
+                GRANT.md ↗
+              </a>
+              <a
+                href="https://github.com/panagot/memfoc/blob/main/docs/COST_MODEL.md"
+                target="_blank"
+                rel="noreferrer"
+                className="text-mem-muted hover:text-mem-gold"
+              >
+                Cost model ↗
+              </a>
+            </div>
+            <p className="text-[10px] text-mem-muted/80">Best experienced on desktop · 1280px+</p>
           </div>
         </footer>
       </div>

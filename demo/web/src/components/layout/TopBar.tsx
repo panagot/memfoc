@@ -3,6 +3,7 @@ import { List, X } from "@phosphor-icons/react";
 import type { SectionId } from "../../data/navigation";
 import { getSection, PRIMARY_NAV } from "../../data/navigation";
 import { Logo } from "../brand/Logo";
+import { DemoVideoCTA } from "../grant/DemoVideoCTA";
 
 export function TopBar({
   active,
@@ -63,6 +64,7 @@ export function TopBar({
           </div>
 
           <div className="hidden shrink-0 items-center gap-2 md:flex">
+            <DemoVideoCTA compact />
             <span className="rounded-full border border-mem-mint/25 bg-mem-mint/[0.06] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-mem-mint">
               Prototype
             </span>

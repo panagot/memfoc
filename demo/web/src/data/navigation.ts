@@ -135,6 +135,9 @@ export function getSection(id: SectionId): NavItem | undefined {
 }
 
 export const QUICK_LINKS = [
+  { label: "GitHub repo", href: "https://github.com/panagot/memfoc" },
+  { label: "Live demo", href: "https://memfoc-one.vercel.app/" },
+  { label: "GRANT.md", href: "https://github.com/panagot/memfoc/blob/main/docs/GRANT.md" },
   { label: "Filecoin Onchain Cloud", href: "https://filecoin.cloud/" },
   { label: "LangGraph Stores", href: "https://docs.langchain.com/oss/python/langgraph/stores" },
   { label: "FIL Builder Grants", href: "https://github.com/filecoin-project/devgrants" },

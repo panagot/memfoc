@@ -1,5 +1,6 @@
 import { ChartBar, Lightning } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
+import { TYPICAL_BENCHMARKS } from "../data/docs";
 import { Panel, SectionHeading } from "../components/ui/Section";
 
 type BenchmarkResults = Record<
@@ -96,14 +97,42 @@ export function BenchmarkSection({
       />
 
       {rows.length === 0 ? (
-        <Panel>
-          <div className="flex flex-col items-center py-12 text-center">
-            <ChartBar className="h-12 w-12 text-mem-muted" weight="duotone" />
-            <p className="mt-4 text-sm text-mem-muted">
-              Runs put/get at 1 KB, 10 KB, and 100 KB payload sizes against the live store.
+        <>
+          <Panel title="Typical prototype numbers" subtitle="From local runs — click Run benchmark for live measurements">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[480px] text-left text-sm">
+                <thead className="text-xs uppercase tracking-wider text-mem-muted">
+                  <tr className="border-b border-mem-line">
+                    <th className="pb-3 pr-4">Metric</th>
+                    <th className="pb-3 pr-4">Typical</th>
+                    <th className="pb-3">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {TYPICAL_BENCHMARKS.map((row) => (
+                    <tr key={row.metric} className="border-b border-mem-line/60">
+                      <td className="py-3 pr-4 font-medium text-mem-frost">{row.metric}</td>
+                      <td className="py-3 pr-4 font-mono text-mem-gold">{row.value}</td>
+                      <td className="py-3 text-mem-muted">{row.note}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-4 text-xs text-mem-muted">
+              Hot path vs InMemoryStore: comparable read/write latency. FOC sync is async and excluded
+              from agent loop blocking.
             </p>
-          </div>
-        </Panel>
+          </Panel>
+          <Panel>
+            <div className="flex flex-col items-center py-8 text-center">
+              <ChartBar className="h-12 w-12 text-mem-muted" weight="duotone" />
+              <p className="mt-4 text-sm text-mem-muted">
+                Run live put/get at 1 KB, 10 KB, and 100 KB against the connected store.
+              </p>
+            </div>
+          </Panel>
+        </>
       ) : (
         <>
           <LatencyBars rows={rows.map(({ label, write, read }) => ({ label, write, read }))} />
@@ -159,7 +188,7 @@ export function BenchmarkSection({
             loops — blocking on IPFS/FOC would break UX.
           </li>
           <li>
-            MockFOC backend adds simulated upload latency; production Synapse is excluded from hot
+            Prototype FOC backend adds simulated upload latency; production Synapse is excluded from hot
             path.
           </li>
           <li>Manifest flush is periodic — not on every write.</li>

@@ -29,7 +29,7 @@ export function FundingGapSection({ onNavigate }: { onNavigate: (id: SectionId) 
             ))}
           </ul>
           <p className="mt-4 rounded-xl border border-mem-gold/20 bg-mem-gold/5 px-3 py-2 text-xs text-mem-muted">
-            MockFOCBackend · simulated FVM tx · Vercel data may reset on cold start
+            Prototype FOC backend · contract simulation · Vercel data may reset on cold start
           </p>
         </Panel>
 
@@ -62,7 +62,7 @@ export function FundingGapSection({ onNavigate }: { onNavigate: (id: SectionId) 
             {
               icon: Rocket,
               title: "Architecture proven",
-              body: "Write → SQLite → async FOC → manifest → rebuild works today with mocks.",
+              body: "Write → SQLite → async FOC → manifest → rebuild works today with prototype backend.",
             },
             {
               icon: CheckCircle,

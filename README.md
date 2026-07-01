@@ -2,7 +2,7 @@
 
 **LangGraph `BaseStore` backed by Filecoin Onchain Cloud**
 
-PostgresStore semantics — with content-addressed durability and on-chain verification on Filecoin.
+MemFOC brings decentralized long-term memory to LangGraph agents — a drop-in replacement for PostgresStore with verifiable storage and on-chain auditability.
 
 **Repository:** [github.com/panagot/memfoc](https://github.com/panagot/memfoc)  
 **Live demo:** [memfoc-one.vercel.app](https://memfoc-one.vercel.app)
@@ -10,12 +10,15 @@ PostgresStore semantics — with content-addressed durability and on-chain verif
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](pyproject.toml)
 [![LangGraph](https://img.shields.io/badge/LangGraph-BaseStore-green.svg)](https://langchain-ai.github.io/langgraph/)
+[![CI](https://github.com/panagot/memfoc/actions/workflows/ci.yml/badge.svg)](https://github.com/panagot/memfoc/actions/workflows/ci.yml)
 
 ---
 
 ## Overview
 
 MemFOC is a Python library that plugs into LangGraph as a native memory backend. Agents read and write memory through the standard `BaseStore` interface — the same API used by PostgresStore and InMemoryStore — while payloads are durably stored as content-addressed blobs on Filecoin Onchain Cloud (FOC) and periodically anchored on the Filecoin Virtual Machine (FVM).
+
+**Memory is not just stored — it's content-addressed with PDP proofs and periodically anchored on-chain for independent verification.**
 
 **Design principle:** immediate local consistency, eventual decentralized durability, periodic on-chain manifest anchoring (not per-write gas).
 
@@ -88,17 +91,17 @@ For competitive positioning against PostgresStore, Engram, Mem0, and FOC MCP too
 
 ## Prototype status
 
-This repository contains a **working localhost prototype**. Grant funding ships production Filecoin integration.
+This repository contains a **working end-to-end prototype** of the MemFOC architecture with simulated FOC and FVM anchoring. Grant funding ships production Filecoin integration.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
 | `FilecoinStore` (put, get, search, delete, list) | Done | LangGraph `BaseStore` compliant |
 | SQLite index | Done | Sub-20ms hot path |
-| `MockFOCBackend` | Done | Content-addressed blobs in `.memfoc/blobs/` |
+| Prototype FOC backend | Done | Content-addressed blobs in `.memfoc/blobs/` |
 | Async sync worker | Done | Retry, WebSocket events |
 | Manifest flush + index rebuild | Done | Simulated FVM transaction hash |
-| Demo API + dashboard | Done | FastAPI + React interactive site |
-| Automated tests | Done | 17 pytest + 12 smoke tests |
+| Demo API + dashboard + LangGraph agent | Done | FastAPI + React + real StateGraph |
+| Automated tests + CI | Done | 22 pytest; GitHub Actions |
 | Synapse / pynapse (Calibration) | Grant M2 | Real FOC uploads |
 | `MemoryManifest.sol` (FVM) | Grant M3 | On-chain anchoring |
 | PyPI release + mainnet | Grant M4 | `pip install memfoc` |
@@ -277,7 +280,7 @@ MemFOC is applying to the **FIL Builder Next Step Grant** ($7,000, 10 weeks).
 
 | Milestone | Budget | Deliverable |
 |-----------|--------|-------------|
-| M1 Core store + tests | $2,000 | CI, expanded tests, Calibration-ready packaging |
+| M1 Hardening + CI | $2,000 | Expanded tests, CI, Calibration packaging |
 | M2 Synapse backend | $2,500 | Real FOC on Calibration testnet |
 | M3 FVM contract | $1,500 | `MemoryManifest.sol`, on-chain anchoring |
 | M4 Mainnet + release | $1,000 | PyPI, examples, demo video |
@@ -294,6 +297,10 @@ Program reference: [FIL Builder Next Step Grants](https://github.com/filecoin-pr
 |----------|-------------|
 | [docs/GRANT.md](docs/GRANT.md) | Full grant application with milestones, budget, and acceptance criteria |
 | [docs/DIFFERENTIATION.md](docs/DIFFERENTIATION.md) | Comparison vs PostgresStore, Engram, Mem0, foc-storage-mcp |
+| [docs/VERIFICATION.md](docs/VERIFICATION.md) | Disaster recovery invariant and third-party audit workflow |
+| [docs/COST_MODEL.md](docs/COST_MODEL.md) | Illustrative USDFC storage and FVM gas estimates |
+| [docs/ADOPTION.md](docs/ADOPTION.md) | Post-launch adoption plan and 90-day metrics |
+| [docs/DEMO_VIDEO_SCRIPT.md](docs/DEMO_VIDEO_SCRIPT.md) | 3–5 minute walkthrough script for grant reviewers |
 
 ---
 

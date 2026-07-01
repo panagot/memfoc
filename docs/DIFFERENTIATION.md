@@ -12,12 +12,25 @@ MemFOC is a **LangGraph `BaseStore` implementation** backed by **Filecoin Onchai
 
 MemFOC is not a hosted memory API, not a LangChain tool wrapper, and not a general-purpose file upload layer. It is a native storage adapter for LangGraph agents that need durable, auditable memory without rewriting agent code.
 
+Engram and Mem0 provide higher-level memory platforms. MemFOC solves a narrower infrastructure problem: plug-in persistence for LangGraph's official `BaseStore` interface.
+
+---
+
+## Product layer positioning
+
+| Product | Layer |
+|---------|-------|
+| PostgresStore | Database backend |
+| Mem0 | Memory intelligence layer |
+| Engram | Decentralized memory platform |
+| **MemFOC** | **LangGraph-native storage adapter** |
+
 ---
 
 ## Comparison matrix
 
-| Solution | Native LangGraph `BaseStore` | Decentralized durability | Content-addressed (CID) | On-chain verification | Primary integration |
-|----------|:----------------------------:|:------------------------:|:-----------------------:|:---------------------:|---------------------|
+| Solution | Native LangGraph `BaseStore` | Decentralized durability | Content-addressed (CID) | On-chain verification | Integration style |
+|----------|:----------------------------:|:------------------------:|:-----------------------:|:---------------------:|-------------------|
 | **MemFOC** | Yes | Yes | Yes | Yes (FVM manifest) | `graph.compile(store=FilecoinStore())` |
 | **PostgresStore** | Yes | No | No | No | `graph.compile(store=PostgresStore(...))` |
 | **Engram SDK** | No | Yes | Yes | Partial | LangChain tools (`store` / `retrieve`) |
@@ -57,7 +70,7 @@ Engram is a Filecoin-backed memory layer for LangChain agents. It addresses a si
 | **Scope** | Broader memory product | Narrow adapter: BaseStore + FOC + FVM manifest |
 | **Hot path** | Depends on integration pattern | SQLite index, async FOC sync |
 
-**Key distinction:** Engram asks agents to invoke memory tools. MemFOC plugs into LangGraph's compile-time store slot — the same pattern teams already use with PostgresStore and InMemoryStore.
+**Key distinction:** Engram is a valuable decentralized memory platform using LangChain tools. MemFOC plugs into LangGraph's compile-time store slot — the same pattern teams already use with PostgresStore and InMemoryStore.
 
 For teams already on LangGraph with `graph.compile(store=...)`, MemFOC is a drop-in replacement path. Engram requires restructuring nodes to call external tools.
 
@@ -115,18 +128,20 @@ Semantic search (embedding-based query) is explicitly deferred to v1.1 with `Not
 
 ---
 
-## Prototype vs production: why mock is intentional today
+## Prototype vs production: why simulation is intentional today
 
-The current repository ships a **working localhost prototype**:
+The current repository ships a **working end-to-end prototype** of the MemFOC architecture:
 
 | Component | Prototype (today) | Production (grant-funded) |
 |-----------|-------------------|---------------------------|
-| FOC uploads | `MockFOCBackend` — content-addressed blobs in `.memfoc/blobs/` | `SynapseBackend` via pynapse on Calibration/mainnet |
+| FOC uploads | Prototype backend — content-addressed blobs in `.memfoc/blobs/` | `SynapseBackend` via pynapse on Calibration/mainnet |
 | FVM anchoring | Simulated transaction hash | `MemoryManifest.sol` on FVM |
 | Distribution | `pip install -e .` from source | `pip install memfoc` on PyPI |
 | Payments | Not applicable locally | USDFC for FOC storage |
 
-The mock backend is not a placeholder UI — it implements the same content-addressing, CID assignment, async worker, and manifest flow that production will use. Grant funding replaces the transport layer (mock → Synapse) and the anchoring layer (simulated → real FVM contract), not the architecture.
+The prototype backend is not a placeholder UI — it implements the same content-addressing, CID assignment, async worker, and manifest flow that production will use. Grant funding replaces the transport layer (prototype → Synapse) and the anchoring layer (simulated → real FVM contract), not the architecture.
+
+**Disaster recovery invariant:** SQLite loss is recoverable from the latest anchored manifest + FOC blobs. See [docs/VERIFICATION.md](./VERIFICATION.md).
 
 This de-risks the grant: reviewers can run and test the full write → sync → manifest → rebuild loop today without testnet credentials.
 
