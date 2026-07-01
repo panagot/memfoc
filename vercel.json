@@ -10,8 +10,5 @@
       "maxDuration": 60,
       "includeFiles": "src/**,demo/**,public/**"
     }
-  },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index.py" }
-  ]
+  }
 }
