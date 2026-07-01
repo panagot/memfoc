@@ -17,8 +17,9 @@ from pydantic import BaseModel, Field
 from memfoc.store import FilecoinStore
 
 ROOT = Path(__file__).resolve().parents[2]
+IS_VERCEL = bool(os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"))
 # Vercel serverless: ephemeral writable storage only under /tmp
-DATA_DIR = Path("/tmp/memfoc") if os.environ.get("VERCEL") else ROOT / ".memfoc"
+DATA_DIR = Path("/tmp/memfoc") if IS_VERCEL else ROOT / ".memfoc"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ws_clients: set[WebSocket] = set()
@@ -87,7 +88,7 @@ class GrantFullAuditBody(BaseModel):
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     """Eager startup for local uvicorn; Vercel uses lazy init middleware."""
-    if os.environ.get("VERCEL"):
+    if IS_VERCEL:
         yield
         return
     await store.setup()
@@ -107,7 +108,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 class EnsureStoreMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):  # type: ignore[override]
-        if os.environ.get("VERCEL"):
+        if IS_VERCEL:
             await ensure_store_ready()
         return await call_next(request)
 
@@ -316,7 +317,7 @@ async def grant_full_audit(body: GrantFullAuditBody) -> dict[str, Any]:
 
 @app.websocket("/ws/events")
 async def ws_events(websocket: WebSocket) -> None:
-    if os.environ.get("VERCEL"):
+    if IS_VERCEL:
         await ensure_store_ready()
     await websocket.accept()
     ws_clients.add(websocket)
