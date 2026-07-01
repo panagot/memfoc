@@ -46,6 +46,8 @@ store = FilecoinStore(
 
 _init_lock = asyncio.Lock()
 _initialized = False
+_seed_lock = asyncio.Lock()
+_seeded = False
 
 
 async def ensure_store_ready() -> None:
@@ -54,6 +56,31 @@ async def ensure_store_ready() -> None:
         if not _initialized:
             await store.setup()
             _initialized = True
+
+
+async def maybe_seed_demo() -> None:
+    """Pre-seed demo memories on Vercel when the store is empty."""
+    global _seeded
+    if not IS_VERCEL or _seeded:
+        return
+    async with _seed_lock:
+        if _seeded:
+            return
+        stats = await store.index.stats()
+        if stats.get("total", 0) > 0:
+            _seeded = True
+            return
+        from langgraph.store.base import PutOp
+
+        seeds = [
+            (("users", "demo-user", "preferences"), "theme", {"value": "dark", "source": "vercel-seed"}),
+            (("agents", "memfoc-demo"), "capabilities", {"storage": "filecoin", "mode": "async-foc"}),
+            (("users", "demo-user", "profile"), "timezone", {"value": "UTC+2", "source": "vercel-seed"}),
+        ]
+        for ns, key, value in seeds:
+            await store.abatch([PutOp(ns, key, value)])
+        _seeded = True
+        broadcast({"type": "demo_seeded", "count": len(seeds)})
 
 
 class PutMemoryBody(BaseModel):
@@ -134,6 +161,8 @@ async def health() -> dict[str, str]:
 
 @app.get("/api/stats")
 async def stats() -> dict[str, Any]:
+    await ensure_store_ready()
+    await maybe_seed_demo()
     return await store.dashboard_stats()
 
 
@@ -221,70 +250,25 @@ async def benchmark() -> dict[str, Any]:
 
 @app.post("/api/agent/run")
 async def agent_run(body: AgentRunBody) -> dict[str, Any]:
-    from langgraph.store.base import GetOp, PutOp, SearchOp
+    from demo.server.agent_graph import build_demo_graph
 
-    user_id = body.user_id
     message = body.message.strip()
     if not message:
-        return {"reply": "Send a non-empty message.", "memories_used": 0}
+        return {"reply": "Send a non-empty message.", "user_id": body.user_id, "graph": "langgraph"}
 
-    msg_key = f"turn-{int(time.time() * 1000)}"
-    await store.abatch(
-        [
-            PutOp(
-                ("users", user_id, "conversation"),
-                msg_key,
-                {"role": "user", "text": message},
-            )
-        ]
+    graph = build_demo_graph(store)
+    result = await graph.ainvoke(
+        {
+            "message": message,
+            "user_id": body.user_id,
+            "reply": "",
+        }
     )
-
-    if message.lower().startswith("remember theme "):
-        theme = message.split("remember theme ", 1)[1].strip()
-        await store.abatch(
-            [
-                PutOp(
-                    ("users", user_id, "preferences"),
-                    "theme",
-                    {"value": theme},
-                )
-            ]
-        )
-        reply = f"Preference stored. Theme set to '{theme}' (syncing to Filecoin)."
-    elif message.lower() == "what is my theme?":
-        items = await store.abatch(
-            [GetOp(("users", user_id, "preferences"), "theme")]
-        )
-        item = items[0]
-        if item:
-            reply = f"Your saved theme is '{item.value.get('value')}' (CID-backed memory)."
-        else:
-            reply = "No theme saved yet. Try: remember theme dark"
-    else:
-        history = await store.abatch(
-            [
-                SearchOp(
-                    ("users", user_id, "conversation"),
-                    limit=5,
-                )
-            ]
-        )
-        count = len(history[0]) if history and history[0] else 0
-        await store.abatch(
-            [
-                PutOp(
-                    ("agents", "memfoc-demo"),
-                    msg_key,
-                    {"summary": message[:120], "turns_seen": count + 1},
-                )
-            ]
-        )
-        reply = (
-            f"Logged your message to verifiable memory. "
-            f"I see {count} prior turn(s) in namespace users/{user_id}/conversation."
-        )
-
-    return {"reply": reply, "user_id": user_id}
+    return {
+        "reply": result["reply"],
+        "user_id": body.user_id,
+        "graph": "langgraph",
+    }
 
 
 @app.post("/api/assistant/chat")

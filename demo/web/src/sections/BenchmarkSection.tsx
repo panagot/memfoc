@@ -1,4 +1,5 @@
 import { ChartBar, Lightning } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
 import { Panel, SectionHeading } from "../components/ui/Section";
 
 type BenchmarkResults = Record<
@@ -10,6 +11,51 @@ type BenchmarkResults = Record<
     cid: string | null;
   }
 >;
+
+const TARGET_MS = 20;
+
+function LatencyBars({ rows }: { rows: { label: string; write: number; read: number }[] }) {
+  const max = Math.max(TARGET_MS * 1.5, ...rows.flatMap((r) => [r.write, r.read]), 1);
+  return (
+    <Panel title="Latency vs 20ms target" subtitle="Local write + read (hot path)">
+      <div className="space-y-5">
+        {rows.map((r) => (
+          <div key={r.label}>
+            <div className="mb-2 flex justify-between text-xs">
+              <span className="font-medium text-mem-frost">{r.label}</span>
+              <span className="font-mono text-mem-muted">
+                W {r.write.toFixed(1)}ms · R {r.read.toFixed(1)}ms
+              </span>
+            </div>
+            <div className="relative h-3 overflow-hidden rounded-full bg-void-inset">
+              <div
+                className="absolute top-0 bottom-0 w-px bg-rose-400/70"
+                style={{ left: `${(TARGET_MS / max) * 100}%` }}
+                title="20ms target"
+              />
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(100, (r.write / max) * 100)}%` }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="absolute inset-y-0 left-0 rounded-full bg-mem-gold/80"
+              />
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(100, (r.read / max) * 100)}%` }}
+                transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+                className="absolute inset-y-1 left-0 rounded-full bg-mem-mint/70"
+                style={{ maxWidth: `${(r.read / max) * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+        <p className="text-[10px] text-mem-muted">
+          Gold = write · Mint = read · Red line = 20ms agent-loop target
+        </p>
+      </div>
+    </Panel>
+  );
+}
 
 export function BenchmarkSection({
   benchmark,
@@ -59,34 +105,37 @@ export function BenchmarkSection({
           </div>
         </Panel>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] rounded-2xl border border-mem-line bg-void-surface/90 text-left text-sm">
-            <thead className="text-xs uppercase tracking-wider text-mem-muted">
-              <tr className="border-b border-mem-line">
-                <th className="px-6 py-4">Size</th>
-                <th className="px-6 py-4">Local write</th>
-                <th className="px-6 py-4">Local read</th>
-                <th className="px-6 py-4">FOC sync</th>
-                <th className="px-6 py-4">CID</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.label} className="border-b border-mem-line/60">
-                  <td className="px-6 py-4 font-medium text-mem-frost">{r.label}</td>
-                  <td className="px-6 py-4 font-mono text-mem-gold">{r.write.toFixed(2)} ms</td>
-                  <td className="px-6 py-4 font-mono">{r.read.toFixed(2)} ms</td>
-                  <td className="px-6 py-4 font-mono">
-                    {r.sync != null ? `${r.sync.toFixed(2)} ms` : "—"}
-                  </td>
-                  <td className="max-w-[180px] truncate px-6 py-4 font-mono text-[10px] text-mem-muted">
-                    {r.cid ?? "—"}
-                  </td>
+        <>
+          <LatencyBars rows={rows.map(({ label, write, read }) => ({ label, write, read }))} />
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] rounded-2xl border border-mem-line bg-void-surface/90 text-left text-sm">
+              <thead className="text-xs uppercase tracking-wider text-mem-muted">
+                <tr className="border-b border-mem-line">
+                  <th className="px-6 py-4">Size</th>
+                  <th className="px-6 py-4">Local write</th>
+                  <th className="px-6 py-4">Local read</th>
+                  <th className="px-6 py-4">FOC sync</th>
+                  <th className="px-6 py-4">CID</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.label} className="border-b border-mem-line/60">
+                    <td className="px-6 py-4 font-medium text-mem-frost">{r.label}</td>
+                    <td className="px-6 py-4 font-mono text-mem-gold">{r.write.toFixed(2)} ms</td>
+                    <td className="px-6 py-4 font-mono">{r.read.toFixed(2)} ms</td>
+                    <td className="px-6 py-4 font-mono">
+                      {r.sync != null ? `${r.sync.toFixed(2)} ms` : "—"}
+                    </td>
+                    <td className="max-w-[180px] truncate px-6 py-4 font-mono text-[10px] text-mem-muted">
+                      {r.cid ?? "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       <div className="grid gap-4 md:grid-cols-3">

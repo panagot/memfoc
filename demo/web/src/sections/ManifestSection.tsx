@@ -1,6 +1,14 @@
 import { Anchor, ArrowsClockwise, ShieldCheck } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
 import type { Stats } from "../lib/api";
 import { CodeBlock, Panel, SectionHeading } from "../components/ui/Section";
+
+const CHAIN = [
+  { id: "sqlite", label: "SQLite index", detail: "synced rows with CIDs", status: "live" as const },
+  { id: "manifest", label: "Manifest JSON", detail: "uploaded to MockFOC", status: "live" as const },
+  { id: "tx", label: "Simulated FVM tx", detail: "0x… hash recorded locally", status: "simulated" as const },
+  { id: "fvm", label: "MemoryManifest.sol", detail: "Calibration + mainnet (M3)", status: "grant" as const },
+];
 
 export function ManifestSection({
   manifest,
@@ -45,6 +53,47 @@ export function ManifestSection({
         }
       />
 
+      <Panel title="Proof chain" subtitle="Click flush to advance the live steps">
+        <div className="flex flex-col gap-0 md:flex-row md:items-stretch md:gap-0">
+          {CHAIN.map((step, i) => {
+            const active =
+              (step.id === "sqlite" && true) ||
+              (step.id === "manifest" && !!manifest) ||
+              (step.id === "tx" && !!manifest?.tx_hash);
+            const dashed = step.status === "grant";
+            return (
+              <div key={step.id} className="flex flex-1 flex-col md:flex-row md:items-center">
+                <motion.div
+                  initial={false}
+                  animate={{
+                    borderColor: active ? "rgba(227, 179, 65, 0.5)" : "rgba(255,255,255, 0.08)",
+                    opacity: dashed ? 0.55 : 1,
+                  }}
+                  className={`rounded-2xl border bg-void-inset p-4 ${
+                    dashed ? "border-dashed" : ""
+                  }`}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-mem-gold/80">
+                    {step.status === "live"
+                      ? "Live"
+                      : step.status === "simulated"
+                        ? "Simulated"
+                        : "Grant M3"}
+                  </p>
+                  <p className="mt-1 font-semibold text-mem-frost">{step.label}</p>
+                  <p className="mt-1 text-xs text-mem-muted">{step.detail}</p>
+                </motion.div>
+                {i < CHAIN.length - 1 && (
+                  <div className="my-2 flex justify-center md:my-0 md:mx-2 md:w-8">
+                    <div className="h-8 w-px bg-mem-line md:h-px md:w-full" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </Panel>
+
       <div className="grid gap-4 md:grid-cols-4">
         <Panel>
           <p className="text-xs uppercase tracking-wider text-mem-muted">Manifest CID</p>
@@ -61,6 +110,9 @@ export function ManifestSection({
           <p className="mt-2 truncate font-mono text-xs text-mem-muted">
             {manifest?.tx_hash ?? "—"}
           </p>
+          {manifest?.tx_hash && (
+            <p className="mt-1 text-[10px] text-amber-400/90">Simulated — not on FVM yet</p>
+          )}
         </Panel>
         <Panel>
           <p className="text-xs uppercase tracking-wider text-mem-muted">Committed at</p>
@@ -71,11 +123,10 @@ export function ManifestSection({
       <Panel title="Manifest structure (v1 prototype)">
         <CodeBlock
           code={`{
-  "version": 3,
+  "version": 1,
+  "item_count": 42,
   "created_at": "2026-07-01T12:00:00Z",
-  "memory_count": 42,
-  "root_hash": "0xabc…",
-  "entries": [
+  "items": [
     {"namespace": ["users","alice","prefs"], "key": "theme", "cid": "bafy…"}
   ]
 }`}

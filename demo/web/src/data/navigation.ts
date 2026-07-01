@@ -2,9 +2,11 @@ import {
   ChartLineUp,
   CloudArrowUp,
   GitBranch,
+  GitDiff,
   House,
   Lightbulb,
   PlayCircle,
+  Rocket,
   Robot,
   Scroll,
   SquaresFour,
@@ -21,7 +23,9 @@ export type SectionId =
   | "agent"
   | "benchmarks"
   | "manifest"
-  | "grant";
+  | "grant"
+  | "funding-gap"
+  | "integration";
 
 export type NavItem = {
   id: SectionId;
@@ -72,6 +76,20 @@ export const PRIMARY_NAV: NavItem[] = [
 
 /** Left sidebar — secondary pages only (no overlap with top nav) */
 export const SIDEBAR_NAV: NavItem[] = [
+  {
+    id: "funding-gap",
+    label: "Today → Funded",
+    description: "Prototype vs grant deliverables",
+    icon: Rocket,
+    group: "Deep dive",
+  },
+  {
+    id: "integration",
+    label: "Integration",
+    description: "PostgresStore vs FilecoinStore",
+    icon: GitDiff,
+    group: "Deep dive",
+  },
   {
     id: "use-cases",
     label: "Use cases",

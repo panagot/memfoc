@@ -12,14 +12,14 @@ export function AgentSection({
   running: boolean;
   onRun: (input: string) => void;
 }) {
-  const [input, setInput] = useState("Remember that I prefer dark mode and work in UTC+2");
+  const [input, setInput] = useState("remember theme dark");
 
   return (
     <div className="space-y-8">
       <SectionHeading
-        eyebrow="LangGraph demo"
-        title="Agent memory loop"
-        description="Run a sample graph node that writes to FilecoinStore. Memories appear in the console and sync to FOC in the background."
+        eyebrow="LangGraph"
+        title="Real graph + FilecoinStore"
+        description="Runs a compiled StateGraph with store=FilecoinStore(). The memory node uses the same BaseStore API as PostgresStore."
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -33,6 +33,10 @@ export function AgentSection({
             rows={4}
             className="w-full rounded-xl border border-mem-line bg-void px-4 py-3 text-sm text-mem-frost outline-none focus:border-mem-gold/50"
           />
+          <p className="mt-2 text-xs text-mem-muted">
+            Try: <code className="text-mem-mint">remember theme dark</code> then{" "}
+            <code className="text-mem-mint">what is my theme?</code>
+          </p>
           <button
             type="button"
             disabled={running}
@@ -40,30 +44,37 @@ export function AgentSection({
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-mem-gold px-5 py-3 text-sm font-semibold text-void disabled:opacity-50"
           >
             <Robot className="h-4 w-4" weight="duotone" />
-            {running ? "Running graph…" : "Run agent"}
+            {running ? "Running graph…" : "Run LangGraph node"}
           </button>
         </Panel>
 
         <Panel title="What happens under the hood">
           <ol className="space-y-3 text-sm text-mem-muted">
-            <li>1. LangGraph node receives state + runtime store handle</li>
-            <li>2. <code className="text-mem-mint">store.put()</code> writes to SQLite immediately</li>
-            <li>3. SyncWorker enqueues FOC upload (non-blocking)</li>
-            <li>4. Index row updates to <span className="text-emerald-300">synced</span> with CID</li>
+            <li>1. API builds graph via <code className="text-mem-mint">build_demo_graph(store)</code></li>
+            <li>2. Node receives <code className="text-mem-mint">store: BaseStore</code> from LangGraph runtime</li>
+            <li>3. <code className="text-mem-mint">store.abatch([PutOp(...)])</code> writes to SQLite</li>
+            <li>4. SyncWorker uploads to FOC asynchronously</li>
           </ol>
           <CodeBlock
-            code={`# demo/server/main.py — simplified
-@app.post("/api/agent/run")
-async def run_agent(body: AgentRequest):
-    result = await demo_graph.ainvoke({"input": body.message})
-    return {"messages": result["messages"]}`}
+            code={`# demo/server/agent_graph.py
+graph = StateGraph(AgentState)
+graph.add_node("memory", memory_node)
+demo_graph = graph.compile(store=FilecoinStore())
+
+result = await demo_graph.ainvoke({
+    "message": "remember theme dark",
+    "user_id": "demo-user",
+    "reply": "",
+})`}
           />
         </Panel>
       </div>
 
       <Panel title="Conversation trace">
         {messages.length === 0 ? (
-          <p className="text-sm text-mem-muted">Run the agent to see tool calls and memory writes.</p>
+          <p className="text-sm text-mem-muted">
+            Run the graph to see memory writes appear in the Live console.
+          </p>
         ) : (
           <div className="space-y-4">
             {messages.map((m, i) => (
@@ -89,9 +100,9 @@ async def run_agent(body: AgentRequest):
       <Panel title="Example memory namespaces">
         <div className="grid gap-3 md:grid-cols-3">
           {[
-            ["users", "alice", "prefs", "theme: dark"],
-            ["sessions", "sess_01", "context", "last topic: Filecoin"],
-            ["agents", "memfoc", "facts", "grant target: $7K"],
+            ["users", "demo-user", "preferences", "theme: dark"],
+            ["users", "demo-user", "conversation", "turn history"],
+            ["agents", "memfoc-demo", "facts", "grant target: $7K"],
           ].map(([a, b, c, d]) => (
             <div key={`${a}-${b}-${c}`} className="rounded-xl border border-mem-line/70 p-4">
               <p className="font-mono text-xs text-mem-mint">
@@ -103,7 +114,7 @@ async def run_agent(body: AgentRequest):
         </div>
         <p className="mt-4 flex items-center gap-2 text-xs text-mem-muted">
           <PaperPlaneTilt className="h-4 w-4" />
-          Namespaces follow LangGraph BaseStore tuple convention
+          Same example in <code className="text-mem-mint">examples/minimal_langgraph.py</code>
         </p>
       </Panel>
     </div>

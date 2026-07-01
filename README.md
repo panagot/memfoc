@@ -259,7 +259,8 @@ memfoc/
 ├── demo/
 │   ├── server/           FastAPI API + assistants
 │   └── web/              React demo dashboard
-├── tests/                Pytest suite
+├── tests/                Pytest suite (8+ store tests)
+├── examples/             minimal_langgraph.py
 ├── scripts/              start.ps1, run_all_tests.ps1, smoke_test_api.py
 ├── docs/
 │   ├── GRANT.md          FIL Builder grant application

@@ -16,6 +16,8 @@ SECTION_GUIDE: dict[str, str] = {
     "benchmarks": "Benchmarks measure sub-20ms local writes at 1–100 KB payload sizes.",
     "manifest": "Manifest & recovery covers flush, FVM anchoring, and rebuild_index().",
     "grant": "Grant roadmap details $7K ask, 10 weeks, and four milestones.",
+    "funding-gap": "Today vs funded shows prototype scope vs M2–M4 deliverables.",
+    "integration": "Integration compares PostgresStore vs FilecoinStore drop-in code.",
 }
 
 NAV_HINTS = """
