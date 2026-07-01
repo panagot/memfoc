@@ -330,24 +330,27 @@ async def ws_events(websocket: WebSocket) -> None:
 
 PUBLIC_DIR = ROOT / "public"
 
-if os.environ.get("VERCEL") and PUBLIC_DIR.is_dir():
-    from fastapi.responses import FileResponse
+if os.environ.get("VERCEL"):
+    from fastapi.responses import FileResponse, HTMLResponse
     from fastapi.staticfiles import StaticFiles
 
     @app.get("/", include_in_schema=False)
-    async def spa_root() -> FileResponse:
-        return FileResponse(PUBLIC_DIR / "index.html")
+    async def spa_root() -> FileResponse | HTMLResponse:
+        index = PUBLIC_DIR / "index.html"
+        if index.is_file():
+            return FileResponse(index)
+        return HTMLResponse(
+            "<!doctype html><html><body>"
+            "<h1>MemFOC API is running</h1>"
+            "<p>Dashboard assets missing — check Vercel build logs.</p>"
+            "<p><a href='/docs'>Open API docs</a></p>"
+            "</body></html>",
+            status_code=200,
+        )
 
     assets_dir = PUBLIC_DIR / "assets"
     if assets_dir.is_dir():
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
-
-    @app.get("/favicon.ico", include_in_schema=False)
-    async def favicon() -> FileResponse:
-        path = PUBLIC_DIR / "favicon.ico"
-        if path.is_file():
-            return FileResponse(path)
-        return FileResponse(PUBLIC_DIR / "index.html")
 
 
 if __name__ == "__main__":
