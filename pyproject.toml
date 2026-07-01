@@ -33,3 +33,9 @@ packages = ["src/memfoc"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.vercel]
+entrypoint = "demo.server.main:app"
+
+[tool.vercel.scripts]
+build = "sh scripts/vercel_build.sh"

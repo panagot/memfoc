@@ -1,4 +1,7 @@
-const API = "http://127.0.0.1:8787";
+/** Same-origin on Vercel; localhost API in dev. Override with VITE_API_URL if needed. */
+const API =
+  import.meta.env.VITE_API_URL ??
+  (import.meta.env.DEV ? "http://127.0.0.1:8787" : "");
 
 export type MemoryItem = {
   namespace: string[];
@@ -105,5 +108,9 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ api_online }),
     }),
-  wsUrl: () => API.replace("http", "ws") + "/ws/events",
+  wsUrl: () => {
+    if (API) return API.replace("http", "ws") + "/ws/events";
+    const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+    return `${proto}//${window.location.host}/ws/events`;
+  },
 };

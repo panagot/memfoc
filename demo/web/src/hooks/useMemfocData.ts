@@ -36,23 +36,29 @@ export function useMemfocData() {
   }, [refresh]);
 
   useEffect(() => {
-    const ws = new WebSocket(api.wsUrl());
-    ws.onmessage = (msg) => {
-      try {
-        const event = JSON.parse(msg.data) as LiveEvent;
-        setEvents((prev) => [event, ...prev].slice(0, 20));
-        if (
-          event.type === "sync_complete" ||
-          event.type === "manifest_committed" ||
-          event.type === "benchmark_complete"
-        ) {
-          refresh();
+    let ws: WebSocket | undefined;
+    try {
+      ws = new WebSocket(api.wsUrl());
+      ws.onmessage = (msg) => {
+        try {
+          const event = JSON.parse(msg.data) as LiveEvent;
+          setEvents((prev) => [event, ...prev].slice(0, 20));
+          if (
+            event.type === "sync_complete" ||
+            event.type === "manifest_committed" ||
+            event.type === "benchmark_complete"
+          ) {
+            refresh();
+          }
+        } catch {
+          /* ignore */
         }
-      } catch {
-        /* ignore */
-      }
-    };
-    return () => ws.close();
+      };
+      ws.onerror = () => ws?.close();
+    } catch {
+      /* WebSocket unavailable (e.g. serverless) — polling still runs */
+    }
+    return () => ws?.close();
   }, [refresh]);
 
   return { stats, memories, syncLog, events, loading, error, refresh };

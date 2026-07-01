@@ -1,0 +1,10 @@
+# Vercel / production demo API (installs memfoc from pyproject.toml)
+.
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+websockets>=14.0
+langgraph>=0.4.0
+langchain-core>=0.3.0
+aiosqlite>=0.20.0
+httpx>=0.28.0
+python-dotenv>=1.0.0

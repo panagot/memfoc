@@ -17,8 +17,9 @@ from pydantic import BaseModel, Field
 from memfoc.store import FilecoinStore
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA_DIR = ROOT / ".memfoc"
-DATA_DIR.mkdir(exist_ok=True)
+# Vercel serverless: ephemeral writable storage only under /tmp
+DATA_DIR = Path("/tmp/memfoc") if os.environ.get("VERCEL") else ROOT / ".memfoc"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 ws_clients: set[WebSocket] = set()
 
@@ -88,7 +89,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1):\d+",
+    allow_origin_regex=(
+        r"https://([a-z0-9-]+\.)*vercel\.app"
+        r"|http://(localhost|127\.0\.0\.1):\d+"
+    ),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
