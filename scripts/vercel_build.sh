@@ -1,9 +1,17 @@
 #!/usr/bin/env sh
-set -e
+set -eu
+
+echo "=== MemFOC Vercel build: frontend -> public/ ==="
+node --version
+npm --version
 
 cd demo/web
-npm ci
 npm run build
 
-mkdir -p ../../public
-cp -r dist/* ../../public/
+cd ../..
+rm -rf public
+mkdir -p public
+cp -r demo/web/dist/* public/
+
+echo "=== public/ contents ==="
+ls -la public/

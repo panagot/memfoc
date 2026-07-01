@@ -1,5 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pip install -r requirements.txt && cd demo/web && npm ci",
+  "buildCommand": "sh scripts/vercel_build.sh",
   "env": {
     "PYTHONPATH": "."
   },
