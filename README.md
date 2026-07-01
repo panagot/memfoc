@@ -4,7 +4,8 @@
 
 PostgresStore semantics — with content-addressed durability and on-chain verification on Filecoin.
 
-**Repository:** [github.com/panagot/memfoc](https://github.com/panagot/memfoc)
+**Repository:** [github.com/panagot/memfoc](https://github.com/panagot/memfoc)  
+**Live demo:** [memfoc-one.vercel.app](https://memfoc-one.vercel.app)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](pyproject.toml)

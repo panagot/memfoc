@@ -70,7 +70,7 @@ graph = builder.compile(store=FilecoinStore())
 | Automated tests (17 pytest + 12 smoke tests) | Passing |
 
 Repository: https://github.com/panagot/memfoc  
-Live demo: *(Vercel URL — add after deploy)*  
+Live demo: https://memfoc-one.vercel.app  
 Demo video: *(add link when recorded)*
 
 ---
@@ -243,7 +243,7 @@ At grant completion:
 | Resource | URL |
 |----------|-----|
 | Source code | https://github.com/panagot/memfoc |
-| Live demo | *(Vercel — add after deploy)* |
+| Live demo | https://memfoc-one.vercel.app |
 | Demo video | *(add when recorded)* |
 | Differentiation | [docs/DIFFERENTIATION.md](./DIFFERENTIATION.md) |
 | Grant program | [FIL Builder Next Step Grants](https://github.com/filecoin-project/devgrants/blob/master/Program%20Resources/Builder%20Next%20Step%20Grants.md) |
