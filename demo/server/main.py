@@ -328,6 +328,28 @@ async def ws_events(websocket: WebSocket) -> None:
         ws_clients.discard(websocket)
 
 
+PUBLIC_DIR = ROOT / "public"
+
+if os.environ.get("VERCEL") and PUBLIC_DIR.is_dir():
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    @app.get("/", include_in_schema=False)
+    async def spa_root() -> FileResponse:
+        return FileResponse(PUBLIC_DIR / "index.html")
+
+    assets_dir = PUBLIC_DIR / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def favicon() -> FileResponse:
+        path = PUBLIC_DIR / "favicon.ico"
+        if path.is_file():
+            return FileResponse(path)
+        return FileResponse(PUBLIC_DIR / "index.html")
+
+
 if __name__ == "__main__":
     import uvicorn
 
