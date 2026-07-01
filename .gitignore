@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.memfoc/
+.env
+.DS_Store
+*.egg-info/
+.pytest_cache/
+*.tsbuildinfo
+
+# Local development only — not for publication
+PROMPT.md
+.cursor/

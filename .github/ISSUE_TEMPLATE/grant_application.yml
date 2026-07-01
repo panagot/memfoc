@@ -1,0 +1,84 @@
+name: FIL Builder Grant Application
+description: Apply for a FIL Builder Next Step Grant using the MemFOC template
+title: "[Grant] MemFOC — LangGraph BaseStore on Filecoin"
+labels: ["grant", "builder-next-step"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Copy the contents of [docs/GRANT.md](../docs/GRANT.md) into this issue, or link to the published document.
+        Fill in Team, Links, and Checklist sections before submitting to filecoin-project/devgrants.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One paragraph describing MemFOC and the grant ask
+      value: |
+        MemFOC implements LangGraph BaseStore with Filecoin Onchain Cloud durability and FVM manifest anchoring. A working prototype exists today; $7,000 over 10 weeks ships testnet FOC, on-chain verification, and PyPI release.
+    validations:
+      required: true
+
+  - type: input
+    id: repo
+    attributes:
+      label: Repository URL
+      value: https://github.com/panagot/memfoc
+    validations:
+      required: true
+
+  - type: input
+    id: demo
+    attributes:
+      label: Live demo URL
+      placeholder: https://memfoc.vercel.app
+    validations:
+      required: false
+
+  - type: input
+    id: video
+    attributes:
+      label: Demo video URL
+      placeholder: https://youtube.com/...
+    validations:
+      required: false
+
+  - type: input
+    id: ask
+    attributes:
+      label: Funding ask (USD)
+      value: "7000"
+    validations:
+      required: true
+
+  - type: textarea
+    id: milestones
+    attributes:
+      label: Milestones
+      description: See docs/GRANT.md for full detail
+      value: |
+        M1 ($2,000) — Core store + CI + expanded tests
+        M2 ($2,500) — SynapseBackend on Calibration testnet
+        M3 ($1,500) — MemoryManifest.sol on FVM
+        M4 ($1,000) — Mainnet + PyPI + demo video
+    validations:
+      required: true
+
+  - type: textarea
+    id: team
+    attributes:
+      label: Team
+      description: Names, GitHub handles, relevant experience
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: Public GitHub repository with Apache 2.0 LICENSE
+        - label: README and docs/GRANT.md complete
+        - label: Live demo deployed
+        - label: Demo video recorded
+        - label: All tests passing
