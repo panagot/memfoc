@@ -344,8 +344,8 @@ async def deploy_info() -> dict[str, object]:
     }
 
 
-@app.get("/", include_in_schema=False)
-async def spa_root() -> FileResponse | HTMLResponse | RedirectResponse:
+@app.get("/", include_in_schema=False, response_model=None)
+async def spa_root():
     if not IS_VERCEL:
         return RedirectResponse(url="/docs")
     index = PUBLIC_DIR / "index.html"
