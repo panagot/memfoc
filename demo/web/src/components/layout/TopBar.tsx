@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { List, X } from "@phosphor-icons/react";
 import type { SectionId } from "../../data/navigation";
 import { getSection, PRIMARY_NAV } from "../../data/navigation";
-import { Logo } from "../brand/Logo";
+import { LogoMark } from "../brand/LogoMark";
 import { DemoVideoCTA } from "../grant/DemoVideoCTA";
 
 export function TopBar({
@@ -19,55 +19,53 @@ export function TopBar({
   const current = getSection(active);
 
   return (
-    <header className="sticky top-0 z-20 px-4 pt-4 md:px-6">
-      <div className="flex items-center gap-3">
-        {/* Mobile menu */}
+    <header className="sticky top-0 z-20 border-b border-mem-line bg-void/95 backdrop-blur-md">
+      <div className="flex h-14 items-center gap-3 px-4 md:px-6 lg:pl-0">
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="rounded-xl border border-mem-line bg-void-raised/90 p-2.5 text-mem-muted backdrop-blur-xl transition hover:text-mem-frost lg:hidden"
+          className="rounded-lg p-2 text-mem-muted transition-colors hover:bg-white/[0.04] hover:text-mem-frost lg:hidden"
           aria-label="Toggle menu"
         >
-          {sidebarOpen ? <X className="h-5 w-5" weight="light" /> : <List className="h-5 w-5" weight="light" />}
+          {sidebarOpen ? <X className="h-5 w-5" /> : <List className="h-5 w-5" />}
         </button>
 
-        {/* Floating island nav bar */}
-        <div className="flex min-w-0 flex-1 items-center justify-between gap-3 rounded-2xl border border-mem-line bg-void-raised/80 px-3 py-2 shadow-bezel backdrop-blur-xl md:px-4">
-          <div className="hidden shrink-0 lg:block">
-            <Logo size="sm" />
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-2.5 lg:hidden">
+            <button
+              type="button"
+              onClick={() => onNavigate("overview")}
+              className="shrink-0"
+              aria-label="MemFOC home"
+            >
+              <LogoMark size={24} />
+            </button>
+            <p className="truncate text-sm font-medium text-mem-frost">{current?.label ?? "MemFOC"}</p>
           </div>
 
-          {/* Primary nav — desktop */}
-          <nav className="hidden flex-1 items-center justify-center gap-0.5 lg:flex">
+          <nav className="hidden flex-1 items-center gap-1 lg:flex">
             {PRIMARY_NAV.map((item) => (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => onNavigate(item.id)}
                 className={clsx(
-                  "rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-500 ease-spring",
+                  "relative px-3 py-2 text-sm font-medium transition-colors duration-200",
                   active === item.id
-                    ? "bg-mem-gold/15 text-mem-gold ring-1 ring-mem-gold/25"
+                    ? "text-mem-frost"
                     : "text-mem-muted hover:text-mem-frost",
                 )}
               >
                 {item.label}
+                {active === item.id && (
+                  <span className="absolute inset-x-3 -bottom-[17px] h-0.5 rounded-full bg-mem-gold" />
+                )}
               </button>
             ))}
           </nav>
 
-          {/* Mobile: current section label only */}
-          <div className="min-w-0 flex-1 lg:hidden">
-            <p className="truncate font-display text-sm font-semibold text-mem-frost">
-              {current?.label ?? "MemFOC"}
-            </p>
-          </div>
-
-          <div className="hidden shrink-0 items-center gap-2 md:flex">
+          <div className="hidden shrink-0 md:block">
             <DemoVideoCTA compact />
-            <span className="rounded-full border border-mem-mint/25 bg-mem-mint/[0.06] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-mem-mint">
-              Prototype
-            </span>
           </div>
         </div>
       </div>

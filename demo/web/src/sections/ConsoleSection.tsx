@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { ArrowsClockwise, Database } from "@phosphor-icons/react";
 import type { MemoryItem, Stats, SyncLogEntry } from "../lib/api";
 import type { LiveEvent } from "../hooks/useMemfocData";
-import { Panel, SectionHeading } from "../components/ui/Section";
+import { Panel, PrimaryButton, SectionHeading } from "../components/ui/Section";
 
 function StatusBadge({ status }: { status: "pending" | "synced" | "failed" }) {
   const styles = {
@@ -86,15 +86,11 @@ export function ConsoleSection({
               <Database className="h-12 w-12 text-mem-muted" weight="duotone" />
               <p className="mt-4 text-sm font-medium text-mem-frost">No memories indexed yet</p>
               <p className="mt-2 max-w-sm text-sm text-mem-muted">
-                Grant reviewers: seed demo data to watch live FOC sync — pending → synced with CIDs.
+                Seed demo data to populate the memory index and watch sync status move from pending to synced.
               </p>
-              <button
-                type="button"
-                onClick={onSeed}
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-mem-gold to-mem-gold-dim px-6 py-3 text-sm font-bold text-void transition hover:brightness-110 active:scale-[0.98]"
-              >
-                Seed demo data
-              </button>
+              <div className="mt-6">
+                <PrimaryButton onClick={onSeed}>Seed demo data</PrimaryButton>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">

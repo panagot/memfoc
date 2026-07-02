@@ -131,33 +131,33 @@ export const DEMO_WALKTHROUGH = [
 
 export const BUILDING_NOW = [
   {
-    status: "done",
+    status: "done" as const,
     item: "FilecoinStore (BaseStore)",
-    detail: "abatch, async FOC sync, SQLite index",
+    detail: "put, get, search, namespaces, delete, async sync",
   },
   {
-    status: "done",
-    item: "Prototype FOC backend",
-    detail: "Content-addressed blobs — same CID semantics as Synapse (M2)",
+    status: "done" as const,
+    item: "Local FOC backend",
+    detail: "Content-addressed blobs with the same CID semantics as production",
   },
   {
-    status: "done",
+    status: "done" as const,
     item: "Demo API + dashboard",
-    detail: "FastAPI + this interactive site",
+    detail: "FastAPI backend, LangGraph agent graph, this site",
   },
   {
-    status: "grant",
-    item: "SynapseBackend (pynapse)",
-    detail: "Real FOC uploads on Calibration testnet",
+    status: "planned" as const,
+    item: "SynapseBackend",
+    detail: "Real Filecoin Onchain Cloud uploads via pynapse",
   },
   {
-    status: "grant",
+    status: "planned" as const,
     item: "MemoryManifest.sol",
-    detail: "FVM contract for periodic anchoring",
+    detail: "FVM contract for periodic manifest anchoring",
   },
   {
-    status: "grant",
-    item: "PyPI release + mainnet",
+    status: "planned" as const,
+    item: "PyPI + mainnet",
     detail: "pip install memfoc on mainnet FOC",
   },
 ];
@@ -184,7 +184,7 @@ export const ARCHITECTURE_LAYERS = [
     subtitle: "BaseStore interface",
     detail:
       "Agents call runtime.store.put, get, search with namespace tuples and JSON values — identical to PostgresStore ergonomics.",
-    color: "#E3B341",
+    color: "#0090FF",
   },
   {
     id: "sqlite",
@@ -199,7 +199,7 @@ export const ARCHITECTURE_LAYERS = [
     title: "Filecoin Onchain Cloud",
     subtitle: "Eventual durability",
     detail:
-      "Background worker uploads JSON payloads as content-addressed blobs via Synapse (mock on localhost). PDP proofs and USDFC payments apply on testnet/mainnet.",
+      "Background worker uploads JSON payloads as content-addressed blobs via Synapse (local dev backend on localhost). PDP proofs and USDFC payments apply on testnet/mainnet.",
     color: "#7AB8FF",
   },
   {
@@ -208,7 +208,7 @@ export const ARCHITECTURE_LAYERS = [
     subtitle: "Periodic anchoring",
     detail:
       "Instead of gas on every put, periodic manifest snapshots are anchored on-chain. Third parties can verify memory state independently.",
-    color: "#F0D078",
+    color: "#4DB8FF",
   },
 ];
 
@@ -241,15 +241,15 @@ namespace | key | value | cid | sync_status | updated_at`,
     title: "Background worker syncs to FOC",
     summary: "Async upload produces a content-addressed CID; row marked synced.",
     detail:
-      "Retries on failure. WebSocket events broadcast sync_complete to the dashboard. On localhost, MockFOCBackend simulates ~120ms upload latency.",
-    latency: "~120 ms (mock)",
+      "Retries on failure. WebSocket events broadcast sync_complete to the dashboard. On localhost, the local dev backend adds ~120ms upload latency.",
+    latency: "~120 ms (local)",
     code: `payload → SHA256 → bafkreih...
 .blob stored in .memfoc/blobs/`,
   },
   {
     step: "04",
     title: "Manifest anchor (periodic)",
-    summary: "flush() uploads manifest JSON and records simulated on-chain tx.",
+    summary: "flush() uploads manifest JSON and records a local dev anchor tx.",
     detail:
       "Manifest lists all synced CIDs. FVM contract emits SnapshotCommitted. Enables disaster recovery via rebuild_index() without replaying every write.",
     latency: "On demand",
@@ -257,6 +257,54 @@ namespace | key | value | cid | sync_status | updated_at`,
   manifestHash,
   manifestCID
 )`,
+  },
+];
+
+export const PRODUCT_MILESTONES = [
+  {
+    id: "Phase 1",
+    title: "Hardening + CI",
+    timeline: "Tests · packaging · docs",
+    description: "Expand test coverage, CI, and production-ready package structure on the existing store.",
+    deliverables: [
+      "Expanded pytest suite",
+      "GitHub Actions CI",
+      "Calibration-ready configuration",
+      "Backend selection docs",
+    ],
+  },
+  {
+    id: "Phase 2",
+    title: "Synapse integration",
+    timeline: "Real FOC uploads",
+    description: "Replace the local backend with pynapse SynapseBackend on Filecoin testnet.",
+    deliverables: [
+      "SynapseBackend implementation",
+      "USDFC payment documentation",
+      "Live CID observability in the dashboard",
+    ],
+  },
+  {
+    id: "Phase 3",
+    title: "FVM manifest contract",
+    timeline: "On-chain anchoring",
+    description: "Deploy MemoryManifest.sol and wire flush_manifest() to real FVM transactions.",
+    deliverables: [
+      "MemoryManifest.sol on Calibration",
+      "rebuild_index() from anchored manifest",
+      "Third-party verification guide",
+    ],
+  },
+  {
+    id: "Phase 4",
+    title: "Mainnet release",
+    timeline: "pip install memfoc",
+    description: "Production deploy, PyPI package, and standalone LangGraph examples.",
+    deliverables: [
+      "Mainnet Synapse + FVM",
+      "PyPI publish",
+      "examples/minimal_langgraph.py polish",
+    ],
   },
 ];
 
@@ -302,7 +350,7 @@ export const GRANT_MILESTONES = [
     id: "M4",
     title: "Mainnet + release",
     weeks: "Weeks 9–10 · Sep–Oct 2026 · $1,000",
-    description: "Production deploy, PyPI package, and grant demo video.",
+    description: "Production deploy, PyPI package, and documentation.",
     deliverables: [
       "Mainnet Synapse + FVM deploy",
       "PyPI publish (memfoc)",
@@ -430,7 +478,7 @@ export const TYPICAL_BENCHMARKS = [
   { metric: "put latency (1 KB)", value: "~4 ms", note: "SQLite abatch" },
   { metric: "get latency", value: "~1 ms", note: "Exact key lookup" },
   { metric: "prefix search", value: "~8 ms", note: "Namespace filter" },
-  { metric: "FOC sync (prototype)", value: "~120 ms", note: "Async, non-blocking" },
+  { metric: "FOC sync (local dev)", value: "~120 ms", note: "Async, non-blocking" },
   { metric: "rebuild 1k memories", value: "~1.4 s", note: "From manifest + blobs" },
 ];
 

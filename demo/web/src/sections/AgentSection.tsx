@@ -41,7 +41,7 @@ export function AgentSection({
             type="button"
             disabled={running}
             onClick={() => onRun(input)}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-mem-gold px-5 py-3 text-sm font-semibold text-void disabled:opacity-50"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-mem-gold px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-mem-gold-dim disabled:opacity-50"
           >
             <Robot className="h-4 w-4" weight="duotone" />
             {running ? "Running graph…" : "Run LangGraph node"}
@@ -102,7 +102,7 @@ result = await demo_graph.ainvoke({
           {[
             ["users", "demo-user", "preferences", "theme: dark"],
             ["users", "demo-user", "conversation", "turn history"],
-            ["agents", "memfoc-demo", "facts", "grant target: $7K"],
+            ["agents", "memfoc-demo", "facts", "storage: filecoin"],
           ].map(([a, b, c, d]) => (
             <div key={`${a}-${b}-${c}`} className="rounded-xl border border-mem-line/70 p-4">
               <p className="font-mono text-xs text-mem-mint">

@@ -16,9 +16,7 @@ MemFOC brings decentralized long-term memory to LangGraph agents — a drop-in r
 
 ## Overview
 
-MemFOC is a Python library that plugs into LangGraph as a native memory backend. Agents read and write memory through the standard `BaseStore` interface — the same API used by PostgresStore and InMemoryStore — while payloads are durably stored as content-addressed blobs on Filecoin Onchain Cloud (FOC) and periodically anchored on the Filecoin Virtual Machine (FVM).
-
-**Memory is not just stored — it's content-addressed with PDP proofs and periodically anchored on-chain for independent verification.**
+MemFOC is a Python library that plugs into LangGraph as a native memory backend. Agents read and write memory through the standard `BaseStore` interface — the same API used by PostgresStore and InMemoryStore — while payloads are durably stored as content-addressed blobs on [Filecoin Onchain Cloud](https://filecoin.cloud/) (FOC) and periodically anchored on the Filecoin Virtual Machine (FVM).
 
 **Design principle:** immediate local consistency, eventual decentralized durability, periodic on-chain manifest anchoring (not per-write gas).
 
@@ -72,8 +70,8 @@ For competitive positioning against PostgresStore, Engram, Mem0, and FOC MCP too
                                               ▼
                               ┌───────────────────────────────┐
                               │  FOC Storage Layer            │
-                              │  MockFOCBackend (prototype)   │
-                              │  SynapseBackend (grant M2)    │
+                              │  Local dev backend (demo)     │
+                              │  SynapseBackend (planned)     │
                               └──────────────┬────────────────┘
                                              │
                                              ▼ periodic flush()
@@ -89,24 +87,22 @@ For competitive positioning against PostgresStore, Engram, Mem0, and FOC MCP too
 
 ---
 
-## Prototype status
-
-This repository contains a **working end-to-end prototype** of the MemFOC architecture with simulated FOC and FVM anchoring. Grant funding ships production Filecoin integration.
+## Build status
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| `FilecoinStore` (put, get, search, delete, list) | Done | LangGraph `BaseStore` compliant |
-| SQLite index | Done | Sub-20ms hot path |
-| Prototype FOC backend | Done | Content-addressed blobs in `.memfoc/blobs/` |
-| Async sync worker | Done | Retry, WebSocket events |
-| Manifest flush + index rebuild | Done | Simulated FVM transaction hash |
-| Demo API + dashboard + LangGraph agent | Done | FastAPI + React + real StateGraph |
-| Automated tests + CI | Done | 22 pytest; GitHub Actions |
-| Synapse / pynapse (Calibration) | Grant M2 | Real FOC uploads |
-| `MemoryManifest.sol` (FVM) | Grant M3 | On-chain anchoring |
-| PyPI release + mainnet | Grant M4 | `pip install memfoc` |
+| `FilecoinStore` (put, get, search, delete, list) | Shipped | LangGraph `BaseStore` compliant |
+| SQLite index | Shipped | Sub-20ms hot path |
+| Local FOC backend | Shipped | Content-addressed blobs in `.memfoc/blobs/` for dev/demo |
+| Async sync worker | Shipped | Retry, WebSocket events |
+| Manifest flush + index rebuild | Shipped | Local dev anchor tx; FVM contract planned |
+| Demo API + dashboard + LangGraph agent | Shipped | FastAPI + React + real StateGraph |
+| Automated tests + CI | Shipped | pytest + GitHub Actions |
+| Synapse / pynapse (testnet) | Planned | Real FOC uploads |
+| `MemoryManifest.sol` (FVM) | Planned | On-chain anchoring |
+| PyPI release + mainnet | Planned | `pip install memfoc` |
 
-Full grant application with milestones and budget: [docs/GRANT.md](docs/GRANT.md)
+Grant milestones and budget (for reviewers): [docs/GRANT.md](docs/GRANT.md)
 
 ---
 
@@ -207,20 +203,25 @@ Semantic search with embedding queries is deferred to v1.1. Prefix search and na
 
 ## Demo dashboard
 
-The interactive demo site is designed for grant reviewers and integrators:
+The [live demo](https://memfoc-one.vercel.app) is a product site — architecture, walkthrough, and live API console. Grant application content lives in [docs/GRANT.md](docs/GRANT.md), not on the public UI.
 
 | Section | Purpose |
 |---------|---------|
-| Overview | Product summary and value proposition |
-| Architecture | Layer diagram and data flow |
+| Overview | Product summary, architecture diagram, live stats |
+| Architecture | Layer diagram and integration code |
 | Guided demo | Step-by-step walkthrough |
 | Live console | Real-time memory table and WebSocket sync feed |
-| Agent playground | Demo agent reading/writing via FilecoinStore |
+| Roadmap | Shipped vs planned releases |
+| Integration | PostgresStore vs FilecoinStore comparison |
+| Use cases | Personalization, audit, multi-agent, portability |
+| How it works | Write → sync → anchor → recover |
+| Agent playground | LangGraph graph with FilecoinStore |
 | Benchmarks | Hot-path latency measurements |
 | Manifest & recovery | Flush manifest and rebuild index |
-| Grant roadmap | Milestones, budget, RFS-1 alignment |
 
-Built-in assistants: **MemFOC Guide** (architecture Q&A) and **Grant Optimizer** (rubric scoring).
+Built-in **MemFOC Guide** assistant answers architecture and integration questions (grant/budget questions redirect to `docs/GRANT.md`).
+
+**Stack:** React + Vite + Tailwind, left navigation shell, [Radix UI](https://www.radix-ui.com/) scroll primitives, Filecoin blue (`#0090FF`) accent.
 
 ---
 
@@ -258,15 +259,15 @@ memfoc/
 │   ├── store.py          FilecoinStore (BaseStore)
 │   ├── index.py          SQLite memory index
 │   ├── worker.py         Async sync + manifest flush
-│   └── backend/          StorageBackend protocol + MockFOCBackend
+│   └── backend/          StorageBackend protocol + local dev backend
 ├── demo/
 │   ├── server/           FastAPI API + assistants
 │   └── web/              React demo dashboard
-├── tests/                Pytest suite (8+ store tests)
+├── tests/                Pytest suite
 ├── examples/             minimal_langgraph.py
 ├── scripts/              start.ps1, run_all_tests.ps1, smoke_test_api.py
 ├── docs/
-│   ├── GRANT.md          FIL Builder grant application
+│   ├── GRANT.md          Grant application (not on live demo UI)
 │   └── DIFFERENTIATION.md  Competitive positioning
 ├── LICENSE               Apache 2.0
 └── pyproject.toml
@@ -276,16 +277,7 @@ memfoc/
 
 ## Grant
 
-MemFOC is applying to the **FIL Builder Next Step Grant** ($7,000, 10 weeks).
-
-| Milestone | Budget | Deliverable |
-|-----------|--------|-------------|
-| M1 Hardening + CI | $2,000 | Expanded tests, CI, Calibration packaging |
-| M2 Synapse backend | $2,500 | Real FOC on Calibration testnet |
-| M3 FVM contract | $1,500 | `MemoryManifest.sol`, on-chain anchoring |
-| M4 Mainnet + release | $1,000 | PyPI, examples, demo video |
-
-Application document: [docs/GRANT.md](docs/GRANT.md)
+MemFOC is applying to the **FIL Builder Next Step Grant** ($7,000, 10 weeks). Full application, milestones, and budget: [docs/GRANT.md](docs/GRANT.md)
 
 Program reference: [FIL Builder Next Step Grants](https://github.com/filecoin-project/devgrants/blob/master/Program%20Resources/Builder%20Next%20Step%20Grants.md)
 
@@ -300,7 +292,7 @@ Program reference: [FIL Builder Next Step Grants](https://github.com/filecoin-pr
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Disaster recovery invariant and third-party audit workflow |
 | [docs/COST_MODEL.md](docs/COST_MODEL.md) | Illustrative USDFC storage and FVM gas estimates |
 | [docs/ADOPTION.md](docs/ADOPTION.md) | Post-launch adoption plan and 90-day metrics |
-| [docs/DEMO_VIDEO_SCRIPT.md](docs/DEMO_VIDEO_SCRIPT.md) | 3–5 minute walkthrough script for grant reviewers |
+| [docs/DEMO_VIDEO_SCRIPT.md](docs/DEMO_VIDEO_SCRIPT.md) | Demo walkthrough script |
 
 ---
 
@@ -312,4 +304,4 @@ Apache License 2.0 — see [LICENSE](LICENSE).
 
 ## Contributing
 
-Contributions are welcome. Please open an issue before large changes. Grant milestone work will be tracked against [docs/GRANT.md](docs/GRANT.md) acceptance criteria.
+Contributions are welcome. Please open an issue before large changes.

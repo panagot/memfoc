@@ -1,5 +1,6 @@
 import { ARCHITECTURE_LAYERS } from "../data/docs";
 import { ArchitectureFlow } from "../components/graphics/ArchitectureFlow";
+import { BezelPanel } from "../components/ui/Bezel";
 import { CodeBlock, Panel, SectionHeading } from "../components/ui/Section";
 
 export function ArchitectureSection() {
@@ -11,9 +12,11 @@ export function ArchitectureSection() {
         description="Filecoin is object storage, not a KV database. MemFOC splits hot path (SQLite) from cold path (FOC) deliberately."
       />
 
-      <Panel>
-        <ArchitectureFlow />
-      </Panel>
+      <BezelPanel padding={false}>
+        <div className="overflow-visible p-4 md:p-6">
+          <ArchitectureFlow />
+        </div>
+      </BezelPanel>
 
       <div className="grid gap-4 lg:grid-cols-2">
         {ARCHITECTURE_LAYERS.map((layer) => (
@@ -64,10 +67,10 @@ def remember(state, runtime):
 
       <Panel title="StorageBackend abstraction">
         <p className="mb-4 text-sm text-mem-muted">
-          The core store depends on a pluggable backend protocol. Localhost uses{" "}
-          <code className="text-mem-mint">MockFOCBackend</code> (~120ms simulated latency).
-          Production uses <code className="text-mem-mint">SynapseBackend</code> via pynapse on
-          Calibration or mainnet.
+          The core store depends on a pluggable backend protocol. Local development uses a
+          content-addressed local backend (~120ms local dev latency). Production uses{" "}
+          <code className="text-mem-mint">SynapseBackend</code> via pynapse on Filecoin
+          Onchain Cloud.
         </p>
         <CodeBlock
           code={`class StorageBackend(Protocol):

@@ -1,5 +1,6 @@
 import { PROCESS_STEPS } from "../data/docs";
 import { MemoryLifecycle } from "../components/graphics/MemoryLifecycle";
+import { BezelPanel } from "../components/ui/Bezel";
 import { CodeBlock, MetricPill, Panel, SectionHeading } from "../components/ui/Section";
 
 export function ProcessSection() {
@@ -11,9 +12,11 @@ export function ProcessSection() {
         description="From agent write to verifiable FOC blob to periodic manifest anchor. Each step is observable in the Live Console."
       />
 
-      <Panel>
-        <MemoryLifecycle />
-      </Panel>
+      <BezelPanel padding={false}>
+        <div className="overflow-visible p-4 md:p-6">
+          <MemoryLifecycle />
+        </div>
+      </BezelPanel>
 
       <div className="space-y-6">
         {PROCESS_STEPS.map((step) => (

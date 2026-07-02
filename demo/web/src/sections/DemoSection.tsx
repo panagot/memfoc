@@ -1,8 +1,7 @@
-import clsx from "clsx";
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import type { SectionId } from "../data/navigation";
 import { DEMO_WALKTHROUGH } from "../data/docs";
-import { Bezel, BezelPanel, Eyebrow, SectionIntro } from "../components/ui/Bezel";
+import { Bezel, BezelPanel, Eyebrow, PrimaryButton, SectionIntro } from "../components/ui/Bezel";
 
 export function DemoSection({ onNavigate }: { onNavigate: (id: SectionId) => void }) {
   const total = DEMO_WALKTHROUGH.length;
@@ -17,8 +16,8 @@ export function DemoSection({ onNavigate }: { onNavigate: (id: SectionId) => voi
         </div>
         <div className="flex gap-1">
           {DEMO_WALKTHROUGH.map((s) => (
-            <div key={s.step} className="h-1.5 flex-1 overflow-hidden rounded-full bg-void">
-              <div className="h-full w-full bg-gradient-to-r from-mem-gold/60 to-mem-mint/60" />
+            <div key={s.step} className="h-1 flex-1 overflow-hidden rounded-full bg-void">
+              <div className="h-full w-full bg-mem-gold/50" />
             </div>
           ))}
         </div>
@@ -32,36 +31,30 @@ export function DemoSection({ onNavigate }: { onNavigate: (id: SectionId) => voi
 
       <div className="relative">
         {/* Vertical connector */}
-        <div className="absolute bottom-8 left-[27px] top-8 hidden w-px bg-gradient-to-b from-mem-gold/40 via-mem-mint/30 to-mem-gold/20 md:block" />
+        <div className="absolute bottom-8 left-[27px] top-8 hidden w-px bg-mem-line md:block" />
 
         <div className="space-y-5">
-          {DEMO_WALKTHROUGH.map((step, i) => (
-            <Bezel key={step.step} glow={i === 0 ? "gold" : false}>
-              <div className="flex flex-col gap-5 p-6 md:flex-row md:items-center md:p-7">
+          {DEMO_WALKTHROUGH.map((step) => (
+            <Bezel key={step.step}>
+              <div className="flex flex-col gap-5 p-6 md:flex-row md:items-center">
                 <div className="flex shrink-0 items-center gap-4">
-                  <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-void-inset ring-1 ring-mem-gold/30">
-                    <span className="font-mono text-lg font-bold text-mem-gold">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-mem-line bg-void-inset">
+                    <span className="font-mono text-base font-medium text-mem-gold">
                       {String(step.step).padStart(2, "0")}
                     </span>
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-display text-lg font-bold text-mem-frost">{step.title}</h3>
+                  <h3 className="text-lg font-semibold text-mem-frost">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-mem-muted">{step.detail}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => onNavigate(step.section)}
-                  className={clsx(
-                    "group inline-flex shrink-0 items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-500 ease-spring",
-                    "border-mem-gold/30 bg-mem-gold/[0.07] text-mem-gold hover:bg-mem-gold/15 active:scale-[0.98]",
-                  )}
+                  className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-mem-line px-4 py-2.5 text-sm font-medium text-mem-frost transition-colors hover:border-mem-gold/40 hover:text-mem-gold"
                 >
                   {step.action}
-                  <ArrowRight
-                    className="h-4 w-4 transition-transform duration-500 ease-spring group-hover:translate-x-0.5"
-                    weight="bold"
-                  />
+                  <ArrowRight className="h-4 w-4" weight="bold" />
                 </button>
               </div>
             </Bezel>
@@ -87,14 +80,7 @@ export function DemoSection({ onNavigate }: { onNavigate: (id: SectionId) => voi
       <div className="text-center">
         <Eyebrow>Ready?</Eyebrow>
         <p className="mt-4 text-mem-muted">Start with step 1 — seed demo data in the live console.</p>
-        <button
-          type="button"
-          onClick={() => onNavigate("console")}
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-mem-gold to-mem-gold-dim px-8 py-3.5 text-sm font-bold text-void transition-all duration-500 ease-spring hover:brightness-110 active:scale-[0.98]"
-        >
-          Open live console
-          <ArrowRight className="h-4 w-4" weight="bold" />
-        </button>
+        <PrimaryButton onClick={() => onNavigate("console")}>Open live console</PrimaryButton>
       </div>
     </div>
   );

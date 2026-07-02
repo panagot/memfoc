@@ -41,12 +41,12 @@ def test_agent_run():
 def test_assistant_chat():
     r = client.post(
         "/api/assistant/chat",
-        json={"message": "What is the grant ask?", "section": "grant"},
+        json={"message": "What is the grant ask?", "section": "roadmap"},
     )
     assert r.status_code == 200
     data = r.json()
     assert data["agent"] == "memfoc-guide"
-    assert "7" in data["reply"]
+    assert "GRANT.md" in data["reply"]
 
 
 def test_design_review_grant_optimizer():

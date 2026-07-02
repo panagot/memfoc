@@ -44,7 +44,7 @@ export function BudgetBar() {
 
 export function WhyFundSection() {
   return (
-    <BezelPanel title="Why fund MemFOC?" subtitle="Three reasons FIL Builder reviewers say yes">
+    <BezelPanel title="Why MemFOC?" subtitle="Three reasons this fills a real gap">
       <div className="grid gap-4 md:grid-cols-3">
         {GRANT_WHY_FUND.map((item) => (
           <div
@@ -81,7 +81,7 @@ export function RfsAlignmentCallout() {
 
 export function GrantUnlocksSection() {
   return (
-    <BezelPanel title="$7,000 unlocks" subtitle="Grant ROI — production Filecoin integration on proven architecture">
+    <BezelPanel title="Production milestones" subtitle="Synapse, FVM contract, PyPI — on proven architecture">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {GRANT_UNLOCKS.map((item) => (
           <div

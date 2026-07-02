@@ -3,30 +3,28 @@ import { LogoMark } from "./LogoMark";
 export function Logo({
   size = "md",
   showTagline = false,
+  markOnly = false,
 }: {
   size?: "sm" | "md" | "lg";
   showTagline?: boolean;
+  markOnly?: boolean;
 }) {
-  const markSize = size === "sm" ? 32 : size === "lg" ? 52 : 40;
-  const textSize =
-    size === "sm" ? "text-base" : size === "lg" ? "text-2xl" : "text-lg";
+  const markSize = size === "sm" ? 28 : size === "lg" ? 44 : 36;
+  const textSize = size === "sm" ? "text-sm" : size === "lg" ? "text-xl" : "text-lg";
+
+  if (markOnly) {
+    return <LogoMark size={markSize} />;
+  }
 
   return (
     <div className="flex items-center gap-3">
-      <div className="relative shrink-0">
-        <div className="absolute inset-0 rounded-2xl bg-mem-gold/20 blur-xl" />
-        <div className="relative rounded-2xl bg-void-inset p-1.5 ring-1 ring-mem-line-strong">
-          <LogoMark size={markSize} />
-        </div>
-      </div>
-      <div>
-        <p className={`font-display font-bold tracking-tight text-mem-frost ${textSize}`}>
-          Mem<span className="text-gradient-gold">FOC</span>
+      <LogoMark size={markSize} />
+      <div className="min-w-0">
+        <p className={`font-semibold leading-none tracking-tight text-mem-frost ${textSize}`}>
+          Mem<span className="text-mem-gold">FOC</span>
         </p>
         {showTagline && (
-          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-mem-muted">
-            LangGraph × Filecoin
-          </p>
+          <p className="mt-1 text-xs text-mem-muted">LangGraph memory on Filecoin</p>
         )}
       </div>
     </div>

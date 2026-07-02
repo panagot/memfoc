@@ -9,7 +9,7 @@ import { api } from "../../lib/api";
 type Msg = { role: "user" | "assistant"; content: string };
 
 const STARTERS = [
-  "What's the grant ask?",
+  "How does FilecoinStore work?",
   "How does MemFOC compare to Mem0?",
   "Walk me through the demo",
 ];
@@ -43,7 +43,7 @@ export function AssistantChat({
     {
       role: "assistant",
       content:
-        "Hi — I'm the MemFOC grant guide. Ask about architecture, milestones, the live demo, or how we beat PostgresStore / Mem0.",
+        "Hi — I'm the MemFOC guide. Ask about architecture, the live demo, integration, or how we compare to PostgresStore and Mem0.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -84,16 +84,14 @@ export function AssistantChat({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 16, scale: 0.96 }}
           transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="fixed bottom-24 right-5 z-[60] flex w-[min(100vw-2.5rem,380px)] flex-col overflow-hidden rounded-3xl border border-mem-line-strong bg-void-raised/95 shadow-glow backdrop-blur-xl"
+          className="fixed bottom-24 right-5 z-[60] flex w-[min(100vw-2.5rem,380px)] flex-col overflow-hidden rounded-xl border border-mem-line bg-void-raised shadow-card"
         >
           <header className="flex items-center justify-between border-b border-mem-line px-4 py-3">
             <div className="flex items-center gap-2.5">
-              <div className="rounded-xl bg-mem-gold/10 p-1.5 ring-1 ring-mem-gold/25">
-                <LogoMark size={22} />
-              </div>
+              <LogoMark size={22} />
               <div>
-                <p className="font-display text-sm font-bold text-mem-frost">MemFOC Guide</p>
-                <p className="text-[10px] text-mem-muted">Grant & architecture assistant</p>
+                <p className="text-sm font-semibold text-mem-frost">MemFOC Guide</p>
+                <p className="text-xs text-mem-muted">Architecture & integration</p>
               </div>
             </div>
             <button
@@ -158,7 +156,7 @@ export function AssistantChat({
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about grant, demo, architecture…"
+              placeholder="Ask about architecture, demo, integration…"
               className="min-w-0 flex-1 rounded-xl border border-mem-line bg-void px-3 py-2 text-sm text-mem-frost outline-none focus:border-mem-gold/40"
             />
             <button
@@ -177,30 +175,22 @@ export function AssistantChat({
 
 export function AssistantFab({ onClick, active }: { onClick: () => void; active: boolean }) {
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onClick}
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.96 }}
       className={clsx(
-        "group fixed bottom-5 right-5 z-[55] flex h-14 w-14 items-center justify-center rounded-full shadow-glow transition-all duration-500",
+        "fixed bottom-5 right-5 z-[55] flex h-12 w-12 items-center justify-center rounded-lg border shadow-card transition-colors duration-200",
         active
-          ? "bg-void-inset ring-2 ring-mem-gold/40"
-          : "bg-gradient-to-br from-mem-gold to-mem-gold-dim ring-1 ring-mem-gold/30",
+          ? "border-mem-gold/40 bg-void-surface text-mem-gold"
+          : "border-mem-gold/30 bg-mem-gold text-white hover:bg-mem-gold-dim",
       )}
       aria-label="Open MemFOC guide chat"
     >
       {active ? (
-        <X className="h-6 w-6 text-mem-gold" weight="light" />
+        <X className="h-5 w-5" />
       ) : (
-        <>
-          <Sparkle className="h-6 w-6 text-void" weight="fill" />
-          <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mem-mint opacity-60" />
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-mem-mint" />
-          </span>
-        </>
+        <Sparkle className="h-5 w-5" weight="fill" />
       )}
-    </motion.button>
+    </button>
   );
 }

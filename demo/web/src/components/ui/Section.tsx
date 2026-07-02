@@ -47,11 +47,9 @@ export function SectionHeading({
 
 export function MetricPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-mem-line bg-void-inset px-3 py-1.5">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-mem-muted">
-        {label}
-      </span>
-      <span className="font-mono text-xs text-mem-gold">{value}</span>
+    <div className="inline-flex items-center gap-2 rounded-md border border-mem-line bg-void-inset px-3 py-1.5">
+      <span className="text-xs text-mem-muted">{label}</span>
+      <span className="font-mono text-xs font-medium text-mem-gold">{value}</span>
     </div>
   );
 }

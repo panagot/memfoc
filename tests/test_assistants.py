@@ -7,9 +7,9 @@ from demo.server.grant_optimizer import grant_optimizer_analyze, grant_optimizer
 
 
 def test_assistant_grant_question():
-    r = assistant_reply("What's the grant ask?", "grant")
+    r = assistant_reply("What's the grant ask?", "roadmap")
     assert r["agent"] == "memfoc-guide"
-    assert "$7" in r["reply"] or "7,000" in r["reply"]
+    assert "GRANT.md" in r["reply"]
 
 
 def test_assistant_memfoc_intro():

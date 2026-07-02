@@ -5,9 +5,9 @@ import { CodeBlock, Panel, SectionHeading } from "../components/ui/Section";
 
 const CHAIN = [
   { id: "sqlite", label: "SQLite index", detail: "synced rows with CIDs", status: "live" as const },
-  { id: "manifest", label: "Manifest JSON", detail: "uploaded to MockFOC", status: "live" as const },
-  { id: "tx", label: "Simulated FVM tx", detail: "0x… hash recorded locally", status: "simulated" as const },
-  { id: "fvm", label: "MemoryManifest.sol", detail: "Calibration + mainnet (M3)", status: "grant" as const },
+  { id: "manifest", label: "Manifest JSON", detail: "content-addressed snapshot", status: "live" as const },
+  { id: "tx", label: "Anchor record", detail: "local dev tx hash", status: "local" as const },
+  { id: "fvm", label: "MemoryManifest.sol", detail: "on-chain verification", status: "planned" as const },
 ];
 
 export function ManifestSection({
@@ -27,15 +27,15 @@ export function ManifestSection({
     <div className="space-y-8">
       <SectionHeading
         eyebrow="Verification"
-        title="FVM manifest anchoring"
-        description="Periodic snapshots commit a Merkle root of all memory CIDs on-chain. Auditors verify without trusting your API."
+        title="Manifest anchoring"
+        description="Periodic snapshots commit memory CIDs for independent audit. Auditors verify without trusting your API."
         action={
           <div className="flex gap-2">
             <button
               type="button"
               onClick={onFlush}
               disabled={flushing}
-              className="inline-flex items-center gap-2 rounded-xl bg-mem-gold px-4 py-2 text-sm font-semibold text-void disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-lg bg-mem-gold px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-mem-gold-dim disabled:opacity-50"
             >
               <Anchor className="h-4 w-4" weight="duotone" />
               {flushing ? "Flushing…" : "Flush manifest"}
@@ -53,32 +53,28 @@ export function ManifestSection({
         }
       />
 
-      <Panel title="Proof chain" subtitle="Click flush to advance the live steps">
+      <Panel title="Proof chain" subtitle="Flush manifest to advance the chain">
         <div className="flex flex-col gap-0 md:flex-row md:items-stretch md:gap-0">
           {CHAIN.map((step, i) => {
             const active =
               (step.id === "sqlite" && true) ||
               (step.id === "manifest" && !!manifest) ||
               (step.id === "tx" && !!manifest?.tx_hash);
-            const dashed = step.status === "grant";
+            const dashed = step.status === "planned";
+            const badge =
+              step.status === "live" ? "Live" : step.status === "local" ? "Local dev" : "Planned";
             return (
               <div key={step.id} className="flex flex-1 flex-col md:flex-row md:items-center">
                 <motion.div
                   initial={false}
                   animate={{
-                    borderColor: active ? "rgba(227, 179, 65, 0.5)" : "rgba(255,255,255, 0.08)",
+                    borderColor: active ? "rgba(0, 144, 255, 0.45)" : "rgba(255,255,255, 0.08)",
                     opacity: dashed ? 0.55 : 1,
                   }}
-                  className={`rounded-2xl border bg-void-inset p-4 ${
-                    dashed ? "border-dashed" : ""
-                  }`}
+                  className={`rounded-2xl border bg-void-inset p-4 ${dashed ? "border-dashed" : ""}`}
                 >
                   <p className="text-[10px] font-bold uppercase tracking-wider text-mem-gold/80">
-                    {step.status === "live"
-                      ? "Live"
-                      : step.status === "simulated"
-                        ? "Simulated"
-                        : "Grant M3"}
+                    {badge}
                   </p>
                   <p className="mt-1 font-semibold text-mem-frost">{step.label}</p>
                   <p className="mt-1 text-xs text-mem-muted">{step.detail}</p>
@@ -111,7 +107,7 @@ export function ManifestSection({
             {manifest?.tx_hash ?? "—"}
           </p>
           {manifest?.tx_hash && (
-            <p className="mt-1 text-[10px] text-amber-400/90">Simulated — not on FVM yet</p>
+            <p className="mt-1 text-[10px] text-mem-muted">Local development record</p>
           )}
         </Panel>
         <Panel>
@@ -120,7 +116,7 @@ export function ManifestSection({
         </Panel>
       </div>
 
-      <Panel title="Manifest structure (v1 prototype)">
+      <Panel title="Manifest structure">
         <CodeBlock
           code={`{
   "version": 1,
@@ -134,18 +130,18 @@ export function ManifestSection({
       </Panel>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="On-chain anchor (grant milestone M3)">
+        <Panel title="On-chain anchor">
           <p className="text-sm leading-relaxed text-mem-muted">
             Production ships <code className="text-mem-mint">MemoryManifest.sol</code> on FVM.
             Flush uploads manifest JSON to FOC, then stores{" "}
-            <code className="text-mem-mint">(root_hash, manifest_cid, version)</code> in contract
-            state — one tx per snapshot, not per memory write.
+            <code className="text-mem-mint">(root_hash, manifest_cid, version)</code> on-chain —
+            one transaction per snapshot, not per memory write.
           </p>
         </Panel>
         <Panel title="Index rebuild">
           <p className="text-sm leading-relaxed text-mem-muted">
-            If SQLite is lost, rebuild walks FOC blobs referenced by the latest anchored manifest.
-            Local index becomes a cache; FOC + FVM are source of truth for verification.
+            If SQLite is lost, rebuild walks FOC blobs referenced by the latest manifest.
+            The local index is a cache; FOC + manifest are the durable source of truth.
           </p>
         </Panel>
       </div>
@@ -157,7 +153,7 @@ export function ManifestSection({
             <h3 className="font-semibold text-mem-frost">Independent verification flow</h3>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-mem-muted">
               <li>Read manifest CID from FVM contract</li>
-              <li>Download manifest JSON from FOC</li>
+              <li>Download manifest JSON from Filecoin Onchain Cloud</li>
               <li>Recompute root_hash from entry CIDs</li>
               <li>Spot-check any memory blob by CID</li>
             </ol>

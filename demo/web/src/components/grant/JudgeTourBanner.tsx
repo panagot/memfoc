@@ -8,7 +8,7 @@ const JUDGE_STEPS: { section: SectionId; label: string; time: string }[] = [
   { section: "demo", label: "Guided demo", time: "30s" },
   { section: "console", label: "Live console", time: "60s" },
   { section: "agent", label: "Agent playground", time: "45s" },
-  { section: "grant", label: "Grant roadmap", time: "60s" },
+  { section: "roadmap", label: "Roadmap", time: "60s" },
 ];
 
 export function JudgeTourBanner({ onNavigate }: { onNavigate: (id: SectionId) => void }) {

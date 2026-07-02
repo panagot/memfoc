@@ -98,7 +98,7 @@ export function BenchmarkSection({
 
       {rows.length === 0 ? (
         <>
-          <Panel title="Typical prototype numbers" subtitle="From local runs — click Run benchmark for live measurements">
+          <Panel title="Typical local numbers" subtitle="From dev runs — click Run benchmark for live measurements">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[480px] text-left text-sm">
                 <thead className="text-xs uppercase tracking-wider text-mem-muted">
@@ -188,7 +188,7 @@ export function BenchmarkSection({
             loops — blocking on IPFS/FOC would break UX.
           </li>
           <li>
-            Prototype FOC backend adds simulated upload latency; production Synapse is excluded from hot
+            Local dev backend adds upload latency off the hot path; production Synapse is excluded from hot
             path.
           </li>
           <li>Manifest flush is periodic — not on every write.</li>
