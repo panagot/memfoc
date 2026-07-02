@@ -1,6 +1,7 @@
-# FIL Builder Next Step Grant — Application
+# FIL Builder / Open Grant — Application
 
-Use this document as the body of a GitHub issue when applying to the [FIL Builder Next Step Grants](https://github.com/filecoin-project/devgrants/blob/master/Program%20Resources/Builder%20Next%20Step%20Grants.md) program.
+**Submitted:** [filecoin-project/devgrants#2138](https://github.com/filecoin-project/devgrants/issues/2138)  
+Program: [FIL Builder Next Step Grants](https://github.com/filecoin-project/devgrants/blob/master/Program%20Resources/Builder%20Next%20Step%20Grants.md)
 
 ---
 
@@ -16,9 +17,12 @@ MemFOC is a Python library that implements LangGraph's `BaseStore` interface wit
 
 **Positioning:** PostgresStore semantics, with content-addressed durability and on-chain verification on Filecoin.
 
-A working end-to-end prototype of the MemFOC architecture is complete: core store, async sync worker, demo API, interactive dashboard, LangGraph agent graph, and automated tests. Grant funding ships testnet FOC integration, the FVM manifest contract, mainnet deployment, and PyPI release — not a greenfield build.
+A working end-to-end prototype is shipped: `FilecoinStore`, async sync worker, demo API, interactive dashboard, LangGraph agent graph, and 22 passing pytest tests with CI. Grant funding completes **production Filecoin integration** (Synapse on Calibration/mainnet, FVM contract, PyPI release) — not a greenfield build.
 
-**Verification:** Memory is content-addressed with PDP proofs on FOC and periodically anchored on-chain (FVM) for independent audit. See [docs/VERIFICATION.md](./VERIFICATION.md).
+**Verification:** Memory is content-addressed with PDP proofs on FOC and periodically anchored on-chain (FVM) for independent audit. See [VERIFICATION.md](./VERIFICATION.md).
+
+**Live demo:** https://memfoc-one.vercel.app  
+**Repository:** https://github.com/panagot/memfoc
 
 ---
 
@@ -30,7 +34,7 @@ Agent frameworks like LangGraph expect memory through a compile-time store inter
 2. **Tool-based integrations** (Engram, Mem0) — require explicit API/tool calls inside agent nodes, not native `BaseStore` drop-in.
 3. **Raw file storage** (FOC MCP servers) — no namespace semantics, search, or agent memory recovery.
 
-Filecoin RFS-1 identifies decentralized agent memory as a priority gap. No production-ready `BaseStore → Filecoin` adapter exists.
+[Filecoin RFS-1](https://filecoin.cloud/agents/rfs-1) identifies decentralized agent memory as a priority gap. No production-ready `BaseStore → Filecoin` adapter exists.
 
 ---
 
@@ -51,8 +55,6 @@ SQLite index ──async──▶ FOC blobs (Synapse / pynapse)
 MemoryManifest.sol (FVM) ──▶ SnapshotCommitted(manifestCID)
 ```
 
-Developers integrate with one line:
-
 ```python
 graph = builder.compile(store=FilecoinStore())
 ```
@@ -65,94 +67,65 @@ graph = builder.compile(store=FilecoinStore())
 |-----------|--------|
 | `FilecoinStore` — put, get, search, list namespaces, delete | Complete |
 | SQLite index with sync status and CID tracking | Complete |
-| `MockFOCBackend` — content-addressed local blobs | Complete |
+| Local FOC backend — content-addressed local blobs | Complete |
 | Async `SyncWorker` with retry and WebSocket events | Complete |
-| `flush_manifest()` and `rebuild_index()` recovery path | Complete (simulated FVM tx) |
+| `flush_manifest()` and `rebuild_index()` recovery path | Complete (local dev anchor tx) |
 | Demo API (FastAPI) + interactive dashboard | Complete |
 | Automated tests (22 pytest) | Passing |
 | GitHub Actions CI | pytest + frontend build |
 
-Repository: https://github.com/panagot/memfoc  
-Live demo: https://memfoc-one.vercel.app  
-Demo video: *(add link when recorded — script: [docs/DEMO_VIDEO_SCRIPT.md](./DEMO_VIDEO_SCRIPT.md))*
+Demo video: *(M2 deliverable — script: [DEMO_VIDEO_SCRIPT.md](./DEMO_VIDEO_SCRIPT.md))*
 
 ---
 
 ## What grant funding delivers
 
+**Total ask:** $5,000  
+**Duration:** 30 days from contract signing
+
 | Milestone | Timeline | Budget | Outcome |
 |-----------|----------|--------|---------|
-| **M1** Hardening + CI | Weeks 1–3 | $2,000 | Expanded tests, CI, Calibration-ready packaging |
-| **M2** Synapse backend | Weeks 4–6 | $2,500 | Real FOC uploads on Calibration via pynapse; USDFC payment docs |
-| **M3** FVM manifest contract | Weeks 7–8 | $1,500 | `MemoryManifest.sol`; real FVM txs; third-party verification guide |
-| **M4** Mainnet + release | Weeks 9–10 | $1,000 | Mainnet deploy; `pip install memfoc` on PyPI; LangGraph example; demo video |
-
-**Total ask:** $7,000  
-**Duration:** 10 weeks (July – October 2026)
+| **M1** Synapse + Calibration FOC | Days 1–14 | $2,500 | Real FOC on Calibration; USDFC docs; expanded tests |
+| **M2** FVM + mainnet + PyPI | Days 15–30 | $2,500 | `MemoryManifest.sol`; mainnet; PyPI; demo video |
 
 ---
 
 ## Milestone details
 
-### M1 — Hardening + CI ($2,000)
+### M1 — Synapse + Calibration FOC ($2,500 · Days 1–14)
 
-**Goal:** Harden the existing prototype into a grant-quality open-source foundation.
-
-Deliverables:
-- Expanded pytest suite (already includes delete, search, namespace listing, manifest flush, index rebuild)
-- GitHub Actions CI (pytest + frontend build)
-- Calibration-ready package structure and environment configuration
-- Documentation: README, architecture guide, differentiation doc, verification guide
-
-Acceptance criteria:
-- All tests pass in CI on push
-- `FilecoinStore.abatch` passes LangGraph BaseStore compliance scenarios
-- README documents prototype vs production backends clearly
-
-### M2 — Synapse + production worker ($2,500)
-
-**Goal:** Replace mock uploads with real Filecoin Onchain Cloud on Calibration testnet.
+**Goal:** Replace local dev uploads with real Filecoin Onchain Cloud on Calibration testnet.
 
 Deliverables:
-- `SynapseBackend` implementation using pynapse / synapse-filecoin-sdk
-- Environment-based backend selection (`MockFOCBackend` fallback for local dev)
+- `SynapseBackend` via pynapse / synapse-filecoin-sdk
+- Environment-based backend selection (local dev fallback preserved)
+- Verifiable CIDs on Filecoin Calibration testnet
 - USDFC payment flow documentation
-- Dashboard observability for real CIDs and upload status
+- Dashboard observability for real upload status
+- Expanded pytest coverage for sync/retry paths
 
 Acceptance criteria:
-- Writes produce verifiable CIDs on Calibration testnet
+- Writes produce verifiable Calibration CIDs
 - Async worker retries and marks sync status correctly
-- Local development still works without testnet credentials (mock fallback)
+- Local development works without testnet credentials
 
-### M3 — FVM manifest contract ($1,500)
+### M2 — FVM manifest + mainnet release ($2,500 · Days 15–30)
 
-**Goal:** On-chain manifest anchoring and disaster recovery.
+**Goal:** On-chain anchoring, mainnet deployment, and open-source release.
 
 Deliverables:
-- `MemoryManifest.sol` deployed to Filecoin Calibration
+- `MemoryManifest.sol` deployed to Calibration and mainnet
 - `flush_manifest()` submits real FVM transactions
-- `rebuild_index()` restores SQLite from anchored manifest + FOC blobs
-- Third-party verification guide (audit workflow without trusting the operator)
-
-Acceptance criteria:
-- Manifest flush emits on-chain `SnapshotCommitted` event
-- Index rebuild succeeds from manifest alone after simulated data loss
-- Verification guide validated by independent walkthrough
-
-### M4 — Mainnet + release ($1,000)
-
-**Goal:** Production-ready open-source release.
-
-Deliverables:
-- Mainnet deployment (Synapse + FVM)
+- `rebuild_index()` verified after simulated index loss
 - PyPI publish: `pip install memfoc`
-- Standalone LangGraph example in `examples/`
-- 5-minute demo walkthrough video for grant reporting
+- Polished `examples/minimal_langgraph.py`
+- 5-minute demo video for grant reporting
+- Third-party verification guide ([VERIFICATION.md](./VERIFICATION.md))
 
 Acceptance criteria:
-- Package installable from PyPI with documented quick start
-- Example runs without demo API or dashboard
-- Video covers write → sync → manifest → rebuild flow
+- On-chain manifest event verifiable on explorer
+- PyPI install + quick start under 30 minutes
+- Demo video published (write → sync → manifest → rebuild)
 
 ---
 
@@ -160,13 +133,21 @@ Acceptance criteria:
 
 | Milestone | Amount | Share |
 |-----------|--------|-------|
-| M1 Hardening + CI | $2,000 | 29% |
-| M2 Synapse backend | $2,500 | 36% |
-| M3 FVM contract | $1,500 | 21% |
-| M4 Mainnet + release | $1,000 | 14% |
-| **Total** | **$7,000** | 100% |
+| M1 Synapse + Calibration FOC | $2,500 | 50% |
+| M2 FVM + mainnet + PyPI | $2,500 | 50% |
+| **Total** | **$5,000** | 100% |
 
-Budget covers engineering time for implementation, testnet/mainnet transaction costs, and documentation. No hardware or infrastructure hosting is required beyond standard cloud CI.
+Budget covers engineering time, testnet/mainnet transaction costs, and documentation.
+
+---
+
+## Outcomes at grant completion
+
+1. Real FOC uploads on **Calibration and mainnet** via Synapse/pynapse with verifiable CIDs
+2. `MemoryManifest.sol` deployed; `flush_manifest()` emits on-chain `SnapshotCommitted`
+3. `rebuild_index()` restores SQLite from manifest + FOC blobs
+4. `pip install memfoc` on PyPI with standalone LangGraph example
+5. Demo video published
 
 ---
 
@@ -183,38 +164,39 @@ Budget covers engineering time for implementation, testnet/mainnet transaction c
 
 ### FVM + open source
 
-- `MemoryManifest.sol` deployed to Calibration and mainnet
-- Apache 2.0 licensed library published to PyPI
+- `MemoryManifest.sol` on Calibration and mainnet
+- Apache 2.0 licensed library on PyPI
 - Full source, tests, and documentation in public GitHub repository
-
-### FOC / Synapse
-
-- Production uploads via pynapse SDK
-- USDFC payment integration documented
-- Content-addressed CIDs with PDP proofs
 
 ---
 
 ## Differentiation
 
-See [docs/DIFFERENTIATION.md](./DIFFERENTIATION.md) for full analysis.
+See [DIFFERENTIATION.md](./DIFFERENTIATION.md).
 
 | vs | MemFOC advantage |
 |----|------------------|
-| **PostgresStore** | Decentralized durability, CID proofs, manifest verification, portable recovery |
-| **Engram SDK** | Native `BaseStore` drop-in; no tool wiring inside agent nodes |
-| **Mem0** | Self-hosted; data on Filecoin; no vendor lock-in |
+| **PostgresStore** | Decentralized durability, CID proofs, manifest verification |
+| **Engram SDK** | Native `BaseStore` drop-in |
+| **Mem0** | Self-hosted; data on Filecoin |
 | **foc-storage-mcp** | Agent memory semantics (namespaces, search, sync, recovery) |
 
 ---
 
 ## Team
 
-*(Add team member names, GitHub handles, and relevant experience.)*
+**Panagiotis Pollis** — sole developer
 
-Suggested fields:
-- Primary developer — LangGraph / Python / Filecoin integration
-- Prior work — links to repos, demos, or contributions in Filecoin or agent tooling ecosystems
+- **GitHub:** [panagot](https://github.com/panagot)
+- **LinkedIn:** [panagiotis-pollis-33509831](https://www.linkedin.com/in/panagiotis-pollis-33509831/)
+- **X:** [@PANAGOT](https://x.com/PANAGOT)
+
+Independent web3 builder since 2014 (Bitcoin). Full-stack developer. Previously founded Bitfortip.com (2015–2021).
+
+**Recent shipped products:**
+
+- **[Tracefunds](https://tracefunds.app)** — On-chain fund-flow intelligence for post-incident crypto tracing (multi-chain, public data only).
+- **[Address Poisoning Detector](https://addresspoisoningdetector.com)** — Preventive monitoring for address-poisoning on Arbitrum One & Nova (scheduled scans, alerts, API).
 
 ---
 
@@ -222,48 +204,31 @@ Suggested fields:
 
 | Risk | Mitigation |
 |------|------------|
-| pynapse SDK API changes | Prototype backend preserves local dev; Synapse isolated behind `StorageBackend` protocol |
+| pynapse SDK API changes | Local dev backend preserved; Synapse behind `StorageBackend` protocol |
 | FVM gas costs for manifest flush | Periodic batching, not per-write anchoring |
-| LangGraph BaseStore API evolution | Minimal surface area; abatch compliance tests in CI |
-| Testnet instability | Prototype backend fallback; retry logic in SyncWorker |
-| Adoption uncertainty | Narrow BaseStore scope; PyPI + LangGraph tutorial; RFS-1 alignment — see [docs/ADOPTION.md](./ADOPTION.md) |
+| LangGraph BaseStore API evolution | Minimal surface area; compliance tests in CI |
+| Testnet instability | Local dev fallback; retry logic in SyncWorker |
+| 30-day timeline | Prototype complete; grant funds integration only |
 
 ---
 
-## Cost model
+## Maintenance and upgrade plans
 
-See [docs/COST_MODEL.md](./COST_MODEL.md) for illustrative USDFC storage and FVM gas estimates.
+Apache 2.0 open source. Post-grant: LangGraph community outreach, Filecoin Slack (#grants-help), tutorial content. `StorageBackend` protocol isolates Synapse API changes.
 
-**Summary:** Agent memory is stored as FOC blobs (USDFC). FVM gas applies only on periodic manifest flush — not per `put()`. For 100k memories (~200 MB), storage cost is low single-digit USDFC/month (order-of-magnitude; M2 publishes Calibration measurements).
-
----
-
-## Adoption plan
-
-See [docs/ADOPTION.md](./ADOPTION.md).
-
-Post-M4: PyPI release, LangGraph community post, Filecoin Slack (#grants-help), tutorial article, demo video embed on site and in grant issue.
+See also [ADOPTION.md](./ADOPTION.md), [COST_MODEL.md](./COST_MODEL.md).
 
 ---
 
 ## Success metrics
 
-### At grant completion (M4)
+### At grant completion (M2)
 
 1. `pip install memfoc` works from PyPI
-2. LangGraph agent stores and retrieves memory via `FilecoinStore()` on mainnet FOC
+2. LangGraph agent stores memory via `FilecoinStore()` on mainnet FOC
 3. Manifest flush produces verifiable on-chain snapshot on FVM
 4. `rebuild_index()` recovers full memory state from manifest + CIDs
-5. Documentation enables a new developer to integrate in under 30 minutes
-
-### 90 days post-launch (aspirational)
-
-| Metric | Target |
-|--------|--------|
-| PyPI installs | 500+ |
-| GitHub stars | 50+ |
-| External tutorials / forks | 3+ |
-| Testnet agents documented | 5+ |
+5. New developer can integrate in under 30 minutes
 
 ---
 
@@ -271,24 +236,23 @@ Post-M4: PyPI release, LangGraph community post, Filecoin Slack (#grants-help), 
 
 | Resource | URL |
 |----------|-----|
+| Grant application | https://github.com/filecoin-project/devgrants/issues/2138 |
 | Source code | https://github.com/panagot/memfoc |
 | Live demo | https://memfoc-one.vercel.app |
-| Demo video | *(add when recorded)* |
-| Cost model | [docs/COST_MODEL.md](./COST_MODEL.md) |
-| Verification | [docs/VERIFICATION.md](./VERIFICATION.md) |
-| Adoption plan | [docs/ADOPTION.md](./ADOPTION.md) |
-| Demo script | [docs/DEMO_VIDEO_SCRIPT.md](./DEMO_VIDEO_SCRIPT.md) |
-| Differentiation | [docs/DIFFERENTIATION.md](./DIFFERENTIATION.md) |
-| Grant program | [FIL Builder Next Step Grants](https://github.com/filecoin-project/devgrants/blob/master/Program%20Resources/Builder%20Next%20Step%20Grants.md) |
+| Demo video | *(M2 deliverable)* |
+| Verification | [VERIFICATION.md](./VERIFICATION.md) |
+| Differentiation | [DIFFERENTIATION.md](./DIFFERENTIATION.md) |
+| Demo script | [DEMO_VIDEO_SCRIPT.md](./DEMO_VIDEO_SCRIPT.md) |
 
 ---
 
-## Checklist before submitting
+## Submission checklist
 
-- [ ] Public GitHub repository published
-- [ ] LICENSE (Apache 2.0) in repository root
-- [ ] README updated with architecture and quick start
-- [ ] Live demo deployed (Vercel + API host)
-- [ ] Demo video recorded (3–5 minutes, judge tour path)
-- [ ] Team section filled in above
-- [ ] GitHub Actions CI passing
+- [x] Public GitHub repository published
+- [x] LICENSE (Apache 2.0) in repository root
+- [x] README updated with architecture and quick start
+- [x] Live demo deployed (Vercel)
+- [x] Grant issue submitted ([#2138](https://github.com/filecoin-project/devgrants/issues/2138))
+- [x] Team section filled in
+- [x] GitHub Actions CI passing
+- [ ] Demo video recorded (M2 deliverable)

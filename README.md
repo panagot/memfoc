@@ -5,7 +5,8 @@
 MemFOC brings decentralized long-term memory to LangGraph agents — a drop-in replacement for PostgresStore with verifiable storage and on-chain auditability.
 
 **Repository:** [github.com/panagot/memfoc](https://github.com/panagot/memfoc)  
-**Live demo:** [memfoc-one.vercel.app](https://memfoc-one.vercel.app)
+**Live demo:** [memfoc-one.vercel.app](https://memfoc-one.vercel.app)  
+**Grant application:** [filecoin-project/devgrants#2138](https://github.com/filecoin-project/devgrants/issues/2138)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](pyproject.toml)
@@ -102,7 +103,7 @@ For competitive positioning against PostgresStore, Engram, Mem0, and FOC MCP too
 | `MemoryManifest.sol` (FVM) | Planned | On-chain anchoring |
 | PyPI release + mainnet | Planned | `pip install memfoc` |
 
-Grant milestones and budget (for reviewers): [docs/GRANT.md](docs/GRANT.md)
+Grant application ($5,000 · 2 milestones · 30 days): [devgrants#2138](https://github.com/filecoin-project/devgrants/issues/2138) · Full doc: [docs/GRANT.md](docs/GRANT.md)
 
 ---
 
@@ -277,9 +278,11 @@ memfoc/
 
 ## Grant
 
-MemFOC is applying to the **FIL Builder Next Step Grant** ($7,000, 10 weeks). Full application, milestones, and budget: [docs/GRANT.md](docs/GRANT.md)
+MemFOC has an open grant application for the **FIL Builder Next Step** program: **$5,000** over **30 days** (2 milestones).
 
-Program reference: [FIL Builder Next Step Grants](https://github.com/filecoin-project/devgrants/blob/master/Program%20Resources/Builder%20Next%20Step%20Grants.md)
+- **Application:** [filecoin-project/devgrants#2138](https://github.com/filecoin-project/devgrants/issues/2138)
+- **Full proposal (repo mirror):** [docs/GRANT.md](docs/GRANT.md)
+- **Program:** [FIL Builder Next Step Grants](https://github.com/filecoin-project/devgrants/blob/master/Program%20Resources/Builder%20Next%20Step%20Grants.md)
 
 ---
 
